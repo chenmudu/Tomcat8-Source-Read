@@ -25,18 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.MultipartConfigElement;
@@ -65,6 +55,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.ContextName;
 import org.apache.catalina.util.Introspection;
+import org.apache.jasper.servlet.JasperInitializer;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.Jar;
@@ -112,8 +103,9 @@ import org.xml.sax.SAXParseException;
 /**
  * Startup event listener for a <b>Context</b> that configures the properties
  * of that Context, and the associated defined servlets.
- *
+ *  这是一个启动事件监听器，用来配置属性的Context以及相关已定义好了的多个Servelt。
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com)
  */
 public class ContextConfig implements LifecycleListener {
 
@@ -773,8 +765,11 @@ public class ContextConfig implements LifecycleListener {
                     Boolean.valueOf(context.getXmlNamespaceAware())));
         }
 
+        //
         webConfig();
-
+        // 添加JSP解析器,因为index.jsp需要加载。
+        final Set<Class<?>>  object = null;
+        context.addServletContainerInitializer(new JasperInitializer(), object);
 
         if (!context.getIgnoreAnnotations()) {
             applicationAnnotationsConfig();
