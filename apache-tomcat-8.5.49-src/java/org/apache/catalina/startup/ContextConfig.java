@@ -105,7 +105,7 @@ import org.xml.sax.SAXParseException;
  * of that Context, and the associated defined servlets.
  *  这是一个启动事件监听器，用来配置属性的Context以及相关已定义好了的多个Servelt。
  * @author Craig R. McClanahan
- * @translator chenchen6(chenmudu@gmail.com)
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class ContextConfig implements LifecycleListener {
 
@@ -767,10 +767,12 @@ public class ContextConfig implements LifecycleListener {
 
         //
         webConfig();
-        // 添加JSP解析器,因为index.jsp需要加载。
-        final Set<Class<?>>  object = null;
-        context.addServletContainerInitializer(new JasperInitializer(), object);
 
+        // 添加JSP解析器,因为index.jsp需要加载。
+        //add JasperInitializer,cause index.jsp need to load.
+        final Set<Class<?>> nullObject4ClassesSet = null;
+        context.addServletContainerInitializer(new JasperInitializer(), nullObject4ClassesSet);
+        //
         if (!context.getIgnoreAnnotations()) {
             applicationAnnotationsConfig();
         }

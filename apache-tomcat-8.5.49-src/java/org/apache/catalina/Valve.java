@@ -29,13 +29,24 @@ import org.apache.catalina.connector.Response;
  * each other into a Pipeline.  The detailed contract for a Valve is included
  * in the description of the <code>invoke()</code> method below.</p>
  *
+ * 一个Valve是与特定容器相关联的请求处理的一个组件。多个Value对象通常相互链接成
+ * 一个Pipeline。在下面的<code>invoke()</code>方法可以看到详细的内容。
+ * (Pipeline由多个Value组成,而一个Value与对应容器中用来处理请求的一个组件.)
+ *
  * <b>HISTORICAL NOTE</b>:  The "Valve" name was assigned to this concept
  * because a valve is what you use in a real world pipeline to control and/or
  * modify flows through it.
+ * “Valve”的名字被赋予了这个概念，是因为一个Valve是你在现实世界中用来控制和/或修改
+ *  所有流经它的物体。
  *
+ *
+ * Value(阀门)作用：拦截请求，并在到达目标前做一些骚操作，类似于Servlet中的过滤器(虽然这里非常不恰当)，
+ * 而这个Value可以在任何容器类组件中出现。所以Value经常被用来记录客户端和服务器的信息，这种技术被称为
+ * 请求转储(request dumping)。请求转储记录的内容包括请求/相应的头部信息和对应的Cookie至文件中。
  * @author Craig R. McClanahan
  * @author Gunnar Rjnning
  * @author Peter Donald
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public interface Valve {
 
@@ -44,12 +55,14 @@ public interface Valve {
 
     /**
      * @return the next Valve in the pipeline containing this Valve, if any.
+     *          如果存在下一个阀门，就去获取这个阀门。
      */
     public Valve getNext();
 
 
     /**
      * Set the next Valve in the pipeline containing this Valve.
+     * 在包含这个阀门(Value)的管道中去设置下一个阀门(Value)。
      *
      * @param valve The new next valve, or <code>null</code> if none
      */

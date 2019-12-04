@@ -71,6 +71,8 @@ import org.apache.tomcat.util.res.StringManager;
  * Abstract implementation of the <b>Container</b> interface, providing common
  * functionality required by nearly every implementation.  Classes extending
  * this base class must may implement a replacement for <code>invoke()</code>.
+ * Container接口的实现类，提供几乎每个实现此接口的类都需要的公共功能。如果类要继承
+ *  这个基础类必须去实现并替换掉<>invoke()</>方法。
  * <p>
  * All subclasses of this abstract base class will include support for a
  * Pipeline object that defines the processing to be performed for each request
@@ -78,27 +80,32 @@ import org.apache.tomcat.util.res.StringManager;
  * "Chain of Responsibility" design pattern.  A subclass should encapsulate its
  * own processing functionality as a <code>Valve</code>, and configure this
  * Valve into the pipeline by calling <code>setBasic()</code>.
+ * 这个抽象类的所有子类，都会含有对Pipeline对象的支持的功能，Pipeline对象利用责任链
+ * 的设计模式，定义了对这个类的<code>invoke()</code>方法接收到的每个request执行的的处理支持。
+ * 子类应该将自己的处理功能封装为一个Valve，并通过调用setBasic()将这个Valve配置到管道中。
  * <p>
  * This implementation fires property change events, per the JavaBeans design
  * pattern, for changes in singleton properties.  In addition, it fires the
  * following <code>ContainerEvent</code> events to listeners who register
  * themselves with <code>addContainerListener()</code>:
+ * 此实现类通过触发多个属性更改事件(events),依照JavaBean的设计模式，去用于单例属性的改变。
+ * 除此之外，还向那些注册了自己addContainerListener的监听器发出ContainerEvent事件。
  * <table border=1>
- *   <caption>ContainerEvents fired by this implementation</caption>
+ *   <caption>ContainerEvents fired by this implementation</caption> //ContainerEvents被触发在这个实现类上。
  *   <tr>
  *     <th>Type</th>
  *     <th>Data</th>
  *     <th>Description</th>
  *   </tr>
  *   <tr>
- *     <td><code>addChild</code></td>
- *     <td><code>Container</code></td>
- *     <td>Child container added to this Container.</td>
+ *     <td><code>addChild</code></td> //增加子容器
+ *     <td><code>Container</code></td> //容器
+ *     <td>Child container added to this Container.</td> //添加到此容器的子容器
  *   </tr>
  *   <tr>
- *     <td><code>{@link #getPipeline() pipeline}.addValve</code></td>
- *     <td><code>Valve</code></td>
- *     <td>Valve added to this Container.</td>
+ *     <td><code>{@link #getPipeline() pipeline}.addValve</code></td> //增加阀门。
+ *     <td><code>Valve</code></td> //阀门
+ *     <td>Valve added to this Container.</td> //在这个容器上增加阀门
  *   </tr>
  *   <tr>
  *     <td><code>removeChild</code></td>
@@ -113,21 +120,26 @@ import org.apache.tomcat.util.res.StringManager;
  *   <tr>
  *     <td><code>start</code></td>
  *     <td><code>null</code></td>
- *     <td>Container was started.</td>
+ *     <td>Container was started.</td> //容器被启动了
  *   </tr>
  *   <tr>
  *     <td><code>stop</code></td>
  *     <td><code>null</code></td>
- *     <td>Container was stopped.</td>
+ *     <td>Container was stopped.</td> //容器被停止了。
  *   </tr>
  * </table>
  * Subclasses that fire additional events should document them in the
  * class comments of the implementation class.
+ * 在实现类的注释中应该记录下引发其他事件的子类。6个标准类。
+ *
+ * Pipeline作为Value的传递的载体。也就是Filter和Filter的关系。Pipeline作为衔接其他容器
+ * 之间的桥梁，将其所需功能抽象出来，形成ContainerBase。
  *
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public abstract class ContainerBase extends LifecycleMBeanBase
-        implements Container {
+        implements Container { //LifecycleMBeanBase and Container
 
     private static final Log log = LogFactory.getLog(ContainerBase.class);
 

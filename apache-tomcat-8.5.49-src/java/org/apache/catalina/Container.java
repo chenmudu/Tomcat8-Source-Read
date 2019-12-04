@@ -73,8 +73,31 @@ import org.apache.juli.logging.Log;
  *     Catalina is embedded in a larger server.
  * </ul>
  *
+ * 责任链衔接的父级接口自然拥有生命周期。
+ *
+ *                  Container(容器)
+ *                      |
+ * -----------------------------------------------
+ *     |            |           |           |
+ *  Engine(1)--->(L)Host--->(M)Context--->(N)Wrapper
+ *
+ * 1.1 每个Engine中包含多个Host.
+ * 1.2 每个Host中包含多个Context.
+ * 1.3 每个Context中包含多个Wrapper。
+ *
+ *
+ *                     Server
+ *                       |
+ *                    Service
+ *                      |
+ * -----------------------------------
+ *          |                    |
+ *     Connector              Container
  * @author Craig R. McClanahan
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
+ *
+ *
  */
 public interface Container extends Lifecycle {
 
