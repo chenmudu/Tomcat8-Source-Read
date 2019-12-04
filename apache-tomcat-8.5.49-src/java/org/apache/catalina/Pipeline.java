@@ -24,6 +24,9 @@ import java.util.Set;
  * required that a Valve somewhere in the pipeline (usually the last one)
  * must process the request and create the corresponding response, rather
  * than trying to pass the request on.</p>
+ * 当<code>invoke</code>方法被调用的时候，这个接口用于去描述多个Vlue(阀门)
+ * 在队列中如何被执行的.在pipeline的某个地方(通常是最后一个)，它是必须放置一个
+ * Valve()的。而且她必须去处理当前这个请求并响应，而不能只是试图去传递请求。
  *
  * <p>There is generally a single Pipeline instance associated with each
  * Container.  The container's normal request processing functionality is
@@ -33,8 +36,16 @@ import java.util.Set;
  * will always be executed last.  Other Valves will be executed in the order
  * that they were added, before the basic Valve is executed.</p>
  *
+ *
+ * Value相当于Filter,Pipeline就是FilterChain。Connector和Container
+ * (包括Engine->Host->Context->ServletWrapper)的交互。是基于Pipeline去进行传递的。
+ * 每个容器与容器，以及容器和Connector的交互都是通过一个一个的Value去进行交互。多个Value
+ * 存在于一个Pipeline内，所以所有的Value去交互的时候都是通过所依附的Pipeline去进行交互。
+ * 这里的交互不仅仅包括请求而且还有对应的相应。一个请求和一个响应才叫做一整个请求的生命周期。
+ * 这样的传递直到最后一个StandardWrapperValve拿到资源然后去调用Servlet后才会去返回。
  * @author Craig R. McClanahan
  * @author Peter Donald
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public interface Pipeline {
 

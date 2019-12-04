@@ -32,8 +32,9 @@ import org.apache.tomcat.util.res.StringManager;
  * method to provide the required functionality, and <strong>MAY</strong>
  * implement the <code>Lifecycle</code> interface to provide configuration
  * management and lifecycle support.
- *
+ * 实现Value接口的抽象类。
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public abstract class ValveBase extends LifecycleMBeanBase implements Contained, Valve {
 
