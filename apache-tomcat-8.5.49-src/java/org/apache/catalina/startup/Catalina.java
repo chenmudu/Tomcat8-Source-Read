@@ -527,6 +527,14 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 加载一个server instance.
+     * 0.1 初始化目录。
+     * 0.2 初始化命名空间。
+     * 0.3 解析server.xml文件。(Digester)    (主)
+     * 0.4 读取对应数据流。
+     * 0.5 获取服务并设置Catalina相关属性。
+     * 0.6 初始化服务器(Server)。                    (主)
+     *
      */
     public void load() {
 
@@ -542,6 +550,7 @@ public class Catalina {
         // Before digester - it may be needed
         initNaming();
 
+        //解析server.xml文件的解析器.即解析所有的组件。
         // Create and execute our Digester
         Digester digester = createStartDigester();
 
@@ -627,6 +636,7 @@ public class Catalina {
             }
         }
 
+        //获取服务并设置Catalina相关属性。
         getServer().setCatalina(this);
         getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
