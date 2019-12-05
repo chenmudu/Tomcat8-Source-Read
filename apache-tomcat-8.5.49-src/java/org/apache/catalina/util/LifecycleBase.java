@@ -33,22 +33,55 @@ import org.apache.tomcat.util.res.StringManager;
  * Base implementation of the {@link Lifecycle} interface that implements the
  * state transition rules for {@link Lifecycle#start()} and
  * {@link Lifecycle#stop()}
+ * 实现了Lifecycle中的start 和 stop的生命周期转换图规则。
+ * 详见下面的解释。具体关注容器的生命周期方法和对应的监听机制。
+ * 主要作用目标是Connector和Service。
+ *
+ *    生命周期相关主要类关系图。
+ *          Lifecycle
+ *              |
+ *          --------
+ *              |
+ *        LifecycleBase
+ *              |
+ *          ---------
+ *        LifecycleMBeanBase
+ *              |
+ * ----------------------------------
+ *      |         |          |
+ * Connectior, Service, ContainerBase
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public abstract class LifecycleBase implements Lifecycle {
+    /**
+     * 容器的状态及生命周期的改变可能是并发的。所以可以看到生命周期方法加了synchronized关键字。
+     * 而且state字段加了对应的volatile关键字。
+     * 关于synchronized以及volatile关键字请去阅读并发相关书籍进行自我积累。
+     */
+
 
     private static final Log log = LogFactory.getLog(LifecycleBase.class);
 
+    /**
+     * 管理打印日志的类，具体请看{@link StringManager}
+     */
     private static final StringManager sm = StringManager.getManager(LifecycleBase.class);
 
 
     /**
      * The list of registered LifecycleListeners for event notifications.
+     * 生命周期监听类的集合。 线程安全的List集合。基于copy and new and set.
+     *
+     * 非常重要的数据结构,添加，删除，遍历对应容器的监听器。
+     * 并添加对应的监听事件(LifecycleEvent)和子类触发对应的监听事件。
      */
     private final List<LifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<>();
 
 
     /**
      * The current state of the source component.
+     * 当前状态为新建状态。
      */
     private volatile LifecycleState state = LifecycleState.NEW;
 
@@ -113,7 +146,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * Allow sub classes to fire {@link Lifecycle} events.
-     *
+     * 允许子类去触发对应的生命周期事件。
      * @param type  Event type
      * @param data  Data associated with event.
      */
@@ -133,6 +166,11 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            /**
+             * 预留的方法。
+             * 作用：子类去调用初始化模板的方法时，去实现这个方法。
+             * 比如{@link LifecycleMBeanBase#initInternal()}等等。
+             */
             initInternal();
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
@@ -144,18 +182,25 @@ public abstract class LifecycleBase implements Lifecycle {
     /**
      * Sub-classes implement this method to perform any instance initialisation
      * required.
-     *
+     * 子类容器初始化时去实现这个方法。
      * @throws LifecycleException If the initialisation fails
      */
     protected abstract void initInternal() throws LifecycleException;
 
 
     /**
+     * 1. 判断容器是否已经初始化。排除特殊情况的发生。
+     * 2. 判断当前状态去初始化/停止/抛异常。
+     * 3. 检查状态,调用子类的初始化方法进行初始化。
+     *
      * {@inheritDoc}
      */
     @Override
     public final synchronized void start() throws LifecycleException {
 
+        /**
+         * 首先去判断容器是否已经启动(依据容器当前的状态和对应的枚举值进行比较。)
+         */
         if (LifecycleState.STARTING_PREP.equals(state) || LifecycleState.STARTING.equals(state) ||
                 LifecycleState.STARTED.equals(state)) {
 
@@ -168,7 +213,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
             return;
         }
-
+        //判断当前状态,依据状态去进行操作。如果是新建状态就去执行初始化操作。
         if (state.equals(LifecycleState.NEW)) {
             init();
         } else if (state.equals(LifecycleState.FAILED)) {
@@ -180,7 +225,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.STARTING_PREP, null, false);
-            startInternal();
+            startInternal();//子类初始化具体逻辑。
             if (state.equals(LifecycleState.FAILED)) {
                 // This is a 'controlled' failure. The component put itself into the
                 // FAILED state so call stop() to complete the clean-up.
@@ -217,6 +262,9 @@ public abstract class LifecycleBase implements Lifecycle {
 
 
     /**
+     * 1.检查容器状态。
+     * 2.设置停止状态。
+     * 3.容器(包括子类)销毁操作。
      * {@inheritDoc}
      */
     @Override
@@ -285,6 +333,12 @@ public abstract class LifecycleBase implements Lifecycle {
     protected abstract void stopInternal() throws LifecycleException;
 
 
+    /**
+     * 1. 检查状态。
+     * 2. 设置状态。
+     * 3. 执行销毁操作(包括子类)。
+     * @throws LifecycleException
+     */
     @Override
     public final synchronized void destroy() throws LifecycleException {
         if (LifecycleState.FAILED.equals(state)) {
@@ -424,13 +478,25 @@ public abstract class LifecycleBase implements Lifecycle {
         }
     }
 
-
+    /**
+     * 无效转换扔出异常。
+     * @param type
+     * @throws LifecycleException
+     */
     private void invalidTransition(String type) throws LifecycleException {
         String msg = sm.getString("lifecycleBase.invalidTransition", type, toString(), state);
         throw new LifecycleException(msg);
     }
 
-
+    /**
+     * 1. 处理子类的异常。
+     * 2. 并设置对应该有状态。
+     * 3. 后转换异常并将其抛出。
+     * @param t Throwable
+     * @param key
+     * @param args
+     * @throws LifecycleException
+     */
     private void handleSubClassException(Throwable t, String key, Object... args) throws LifecycleException {
         setStateInternal(LifecycleState.FAILED, null, false);
         ExceptionUtils.handleThrowable(t);

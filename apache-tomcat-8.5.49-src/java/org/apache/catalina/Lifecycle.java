@@ -56,7 +56,7 @@ package org.apache.catalina;
  * ----»-----------------------------»------------------------------
  *
  * Any state can transition to FAILED.
- *
+ * //任何状态都可以转换成失败状态。
  * Calling start() while a component is in states STARTING_PREP, STARTING or
  * STARTED has no effect.
  *

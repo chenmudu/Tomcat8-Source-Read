@@ -52,6 +52,7 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
      */
     @Override
     protected void initInternal() throws LifecycleException {
+
         // If oname is not null then registration has already happened via
         // preRegister().
         if (oname == null) {

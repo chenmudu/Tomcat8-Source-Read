@@ -61,6 +61,17 @@ public final class Bootstrap {
 
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
 
+    /**
+     * 1.静态代码块儿在类加载。详见深入理解JVM。
+     *  1.1 获取bin目录的绝对路径。
+     *  1.2.设置安装目录的路径。
+     *  1.3.设置工作目录的路径。
+     * 也就是启动参数中的参数设置：
+     *  -Dcatalina.home=catalina-home   //安装目录。
+     *  -Dcatalina.base=catalina-home   //工作目录。
+     *  从环境变量找,找不到后就去设置即可。
+     *
+     */
     static {
         // Will always be non-null
         String userDir = System.getProperty("user.dir");
@@ -69,6 +80,7 @@ public final class Bootstrap {
         String home = System.getProperty(Globals.CATALINA_HOME_PROP);
         File homeFile = null;
 
+        //获取的是tomcat的安装目录.
         if (home != null) {
             File f = new File(home);
             try {
@@ -81,6 +93,7 @@ public final class Bootstrap {
         if (homeFile == null) {
             // First fall-back. See if current directory is a bin directory
             // in a normal Tomcat install
+            //正常安装下查看是不是bin目录。
             File bootstrapJar = new File(userDir, "bootstrap.jar");
 
             if (bootstrapJar.exists()) {
@@ -102,14 +115,15 @@ public final class Bootstrap {
                 homeFile = f.getAbsoluteFile();
             }
         }
-
+        //工作目录和安装目录默认是一致的。可以设为不一致。
+        //环境变量设置(安装目录)。 设置catalinaHomeFile = 当前bin文件夹绝对路径。
         catalinaHomeFile = homeFile;
         System.setProperty(
                 Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());
 
         // Then base
         String base = System.getProperty(Globals.CATALINA_BASE_PROP);
-        if (base == null) {
+        if (base == null) { //设置工作目录。
             catalinaBaseFile = catalinaHomeFile;
         } else {
             File baseFile = new File(base);
@@ -131,7 +145,29 @@ public final class Bootstrap {
      * Daemon reference.
      */
     private Object catalinaDaemon = null;
-
+    /**
+     * tomcat自己定义的三个类加载器(URLClassLoader子类).为了打破双亲委派模型。
+     *  JVM类加载器结构图:(双亲委派模型)
+     *          Bootstrap ClassLoader    --
+     *                  |                  |
+     *           Ext ClassLoader           |----> JVM内部的三个类加载器。
+     *                  |                  |
+     *           System ClassLoader      --
+     *                  |
+     *           Common ClassLoader     --->Tomcat自定义根加载器(tomcat公共类加载器)
+     *    -------------------------------
+     *          |               |
+     *  CatalinaLoader     SharedLoader-->所有的Web服务器的类加载器。(web向从这里找。)
+     *                          |
+     *                        WebApps
+     *                          |
+     *                   -------------
+     *                      |       |
+     *                   WebApps  WebApps
+     *                     |
+     *           (WEB-INFO/classes,lib)
+     *  ()
+     */
     ClassLoader commonLoader = null;
     ClassLoader catalinaLoader = null;
     ClassLoader sharedLoader = null;
@@ -139,15 +175,21 @@ public final class Bootstrap {
 
     // -------------------------------------------------------- Private Methods
 
-
+    /**
+     * 初始化各种类加载器。
+     * 0.1
+     */
     private void initClassLoaders() {
         try {
+            //置空  目的：打破双亲委派模型机制。因为浪费性能。
             commonLoader = createClassLoader("common", null);
             if (commonLoader == null) {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader = this.getClass().getClassLoader();
             }
+            //指向了commonLoader
             catalinaLoader = createClassLoader("server", commonLoader);
+            //指向了commonLoader
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
             handleThrowable(t);
@@ -156,7 +198,13 @@ public final class Bootstrap {
         }
     }
 
-
+    /**
+     * 创建类加载器
+     * @param name
+     * @param parent
+     * @return
+     * @throws Exception
+     */
     private ClassLoader createClassLoader(String name, ClassLoader parent)
         throws Exception {
 
@@ -246,9 +294,12 @@ public final class Bootstrap {
     /**
      * Initialize daemon.
      * @throws Exception Fatal initialization error
+     *
+     * 1. 初始化类加载器。
+     * 2. 实例化Catalina对象。 daemon的设置。
      */
     public void init() throws Exception {
-
+        //初始化类加载器。
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -258,6 +309,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        //反射去加载Catalina类并进行实例化。
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -269,16 +321,21 @@ public final class Bootstrap {
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
+        /**
+         * 反射执行对应setParentClassLoader方法。
+         * 详见{@link Catalina#setParentClassLoader(ClassLoader)}
+         */
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
-
+        //将Catalina设置会守护进程。
         catalinaDaemon = startupInstance;
     }
 
 
     /**
      * Load daemon.
+     * load的时候 这时候有参数了。
      */
     private void load(String[] arguments) throws Exception {
 
@@ -300,6 +357,7 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
+        //反射调用Catalina。
         method.invoke(catalinaDaemon, param);
     }
 
@@ -428,16 +486,25 @@ public final class Bootstrap {
 
 
     /**
+     * 2.运行的基础。(instance, init, load, start)
+     * 2.1 创建Bootstrap(实例化)。
+     * 2.2 检测运行命令。
+     * 2.3 执行对应操作。
+     * 2.4 初始化
+     * 2.5 加载。(实质是Catalina的加载。)
+     * 2.6
+     *
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
-     *
+     * 通过提供的脚本去执行入口方法.这是启动tomcat的入口。
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
 
         synchronized (daemonLock) {
-            if (daemon == null) {
+            if (daemon == null) { //tomcat没用启动。
                 // Don't set daemon until init() has completed
+                //在init()方法完成前不要设置守护线程进程
                 Bootstrap bootstrap = new Bootstrap();
                 try {
                     bootstrap.init();
@@ -446,7 +513,7 @@ public final class Bootstrap {
                     t.printStackTrace();
                     return;
                 }
-                daemon = bootstrap;
+                daemon = bootstrap;//设置守护即引用Bootstrap。
             } else {
                 // When running as a service the call to stop will be on a new
                 // thread so make sure the correct class loader is used to
@@ -454,7 +521,10 @@ public final class Bootstrap {
                 Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
             }
         }
-
+        /**
+         * 此时daemon已经变成Catalina了。执行load方法其实是在执行Catalina的load方法。
+         *   详见{@link Catalina#load}
+         */
         try {
             String command = "start";
             if (args.length > 0) {

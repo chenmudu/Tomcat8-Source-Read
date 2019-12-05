@@ -43,7 +43,8 @@ import java.util.ResourceBundle;
  *
  * <p>Please see the documentation for java.util.ResourceBundle for
  * more information.
- *
+ * 用于管理打印日志的类.Tomcat对每个包提供自己的properties文件，并为文件提供
+ * StringManager实例(类似于单例)。用来管理各自包下的日志的打印。
  * @author James Duncan Davidson [duncan@eng.sun.com]
  * @author James Todd [gonzo@eng.sun.com]
  * @author Mel Martinez [mmartinez@g1440.com]
@@ -55,6 +56,7 @@ public class StringManager {
 
     /**
      * The ResourceBundle for this StringManager.
+     * ResourceBundle解析资源文件，具体请看{@link ResourceBundle}
      */
     private final ResourceBundle bundle;
     private final Locale locale;
