@@ -960,6 +960,13 @@ public class Connector extends LifecycleMBeanBase  {
     }
 
 
+    /**
+     * Connector的初始化工作。
+     * 1. 创建适配器。并设置协议处理器的适配器。
+     * 2. 协议处理器的初始化工作()。
+     * {@link ProtocolHandler}的中文注释。
+     * @throws LifecycleException
+     */
     @Override
     protected void initInternal() throws LifecycleException {
 

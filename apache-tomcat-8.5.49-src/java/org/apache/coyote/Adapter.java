@@ -20,7 +20,7 @@ import org.apache.tomcat.util.net.SocketEvent;
 
 /**
  * Adapter. This represents the entry point in a coyote-based servlet container.
- *
+ * 这表示基于coyote的servlet容器中的入口点。
  *
  * @author Remy Maucherat
  * @see ProtocolHandler

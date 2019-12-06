@@ -29,6 +29,8 @@ import org.apache.catalina.startup.Catalina;
  * the servlet container as a whole.  A <code>Server</code> may contain
  * one or more <code>Services</code>, and the top level set of naming
  * resources.
+ * 一个Server元素代表整个CatalinaServlet容器.她的属性表示整个Servlet容器的特征。
+ * 一个Server可能包含一个或多个Service，以及最顶层的命名资源。
  * <p>
  * Normally, an implementation of this interface will also implement
  * <code>Lifecycle</code>, such that when the <code>start()</code> and

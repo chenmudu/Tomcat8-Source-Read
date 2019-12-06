@@ -22,15 +22,25 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 
 /**
  * Abstract the protocol implementation, including threading, etc.
- *
+ * 抽象出协议的实现,包括线程。
  * This is the main interface to be implemented by a coyote protocol.
  * Adapter is the main interface to be implemented by a coyote servlet
  * container.
- *
+ * 适配器是要由coyote(通讯连接协议(Http/Ajp)) servlet容器实现的主接口。
+ * 适配器只要是由coyote servlet容器实现的主接口。
  * @author Remy Maucherat
  * @author Costin Manolache
  * @see Adapter
+ *
+ * 你可以点一下他的子类。发现两种协议。三种处理方式。总计6种组合。详见tomcat官网。Bio的请求处理模式已经取消。
+ * {@see <a href="http://tomcat.apache.org/tomcat-8.0-doc/config/http.html>http://tomcat.apache.org/tomcat-8.0-doc/config/http.html</a> }
+ *
+ * 这儿啰嗦一下：BIO, NIO, NIO2, APR.
+ * 阻塞与非阻塞只是体现在(Connector组件对于读取请求头以及等待下一个请求时的策略而言)
+ * Read Request Headers 和 Wait for next Request 以及 SSL Handshake上面。详见上链接。
  */
+
+//
 public interface ProtocolHandler {
 
     /**

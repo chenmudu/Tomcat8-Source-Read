@@ -56,8 +56,10 @@ import org.apache.tomcat.util.res.StringManager;
 /**
  * Standard implementation of the <b>Server</b> interface, available for use
  * (but not required) when deploying and starting Catalina.
- *
+ * Server接口的实现类。当部署和启动Catalina时候可以使用。
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
+ *
  */
 public final class StandardServer extends LifecycleMBeanBase implements Server {
 
@@ -795,16 +797,28 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     /**
      * Invoke a pre-startup initialization. This is used to allow connectors
      * to bind to restricted ports under Unix operating environments.
+     * 调用启动前的初始化操作，这将允许多个Connector绑定到Unix环境下受限的端口上。
+     *
+     * 1. SringCache的注册。
+     * 2. MBeanFactory的注册。
+     * 3. JMX的初始化工作。
+     * 4. 初始化多个Service服务。(重点吧。)
      */
     @Override
     protected void initInternal() throws LifecycleException {
-
+        /**
+         * 此处可以打一个断点。看下。
+         */
         super.initInternal();
 
         // Register global String cache
         // Note although the cache is global, if there are multiple Servers
         // present in the JVM (may happen when embedding) then the same cache
         // will be registered under multiple names
+        /**
+         * 多个Server注册在JVM中的时候，多个名称的cache将会注册同一个缓存。
+         * 了解下JVM参数中的 -XX:AutoBoxCacheMax=Number.
+         */
         onameStringCache = register(new StringCache(), "type=StringCache");
 
         // Register the MBeanFactory
@@ -812,11 +826,13 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         factory.setContainer(this);
         onameMBeanFactory = register(factory, "type=MBeanFactory");
 
-        // Register the naming resources
+        // Register the naming resources   JMX.
+        //JMX 是一套标准的代理和服务.服务治理和监控。
         globalNamingResources.init();
 
         // Populate the extension validator with JARs from common and shared
         // class loaders
+        //逃离JVM的双亲委派模型,用从Common和Shared的ClassLoader的JAR包去填充扩展验证器。
         if (getCatalina() != null) {
             ClassLoader cl = getCatalina().getParentClassLoader();
             // Walk the class loader hierarchy. Stop at the system class loader.
@@ -844,6 +860,11 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
             }
         }
         // Initialize our defined Services
+        //一个Server下多个Service,一个Server的初始化意味着该Server下的所有Service都会被初始化。
+        //(此处打断点跳进去看下。)
+        /**
+         * {@link StandardService#initInternal()}
+         */
         for (int i = 0; i < services.length; i++) {
             services[i].init();
         }

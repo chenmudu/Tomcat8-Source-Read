@@ -50,6 +50,7 @@ import org.apache.juli.logging.LogFactory;
  * You can set the jvmRoute direct or with the System.property <b>jvmRoute</b>.
  *
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class StandardEngine extends ContainerBase implements Engine {
 
@@ -231,11 +232,20 @@ public class StandardEngine extends ContainerBase implements Engine {
     }
 
 
+    /**
+     * 初始化方法。并没有去初始化后续容器。
+     * @throws LifecycleException
+     */
     @Override
     protected void initInternal() throws LifecycleException {
         // Ensure that a Realm is present before any attempt is made to start
         // one. This will create the default NullRealm if necessary.
         getRealm();
+        /**
+         * 调用父类的初始化。
+         * 详见{@link ContainerBase#initInternal}
+         */
+
         super.initInternal();
     }
 

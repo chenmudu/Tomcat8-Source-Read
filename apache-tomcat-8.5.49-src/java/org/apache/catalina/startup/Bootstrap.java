@@ -42,9 +42,14 @@ import org.apache.juli.logging.LogFactory;
  * roundabout approach is to keep the Catalina internal classes (and any
  * other classes they depend on, such as an XML parser) out of the system
  * class path and therefore not visible to application level classes.
+ * Bootstrap为了Servlet容器而先加载.为了装入Catalina内部类(通过在“Catalina .home”
+ * 下的“server”目录中找到的所有JAR文件)， 这个应用程序构造了一个类加载器。并开始执行
+ * 容器的常规操作。这种加载方式是为了将Catalina内部类(以及它们所依赖的任何其他类，如XML
+ * 解析器)排除在系统类路径之外。所以对application级别的类是不可见的。
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public final class Bootstrap {
 
@@ -62,7 +67,8 @@ public final class Bootstrap {
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
 
     /**
-     * 1.静态代码块儿在类加载。详见深入理解JVM。
+
+     * 1.静态代码块儿在类中的加载顺序。详见深入理解JVM。
      *  1.1 获取bin目录的绝对路径。
      *  1.2.设置安装目录的路径。
      *  1.3.设置工作目录的路径。
@@ -177,7 +183,6 @@ public final class Bootstrap {
 
     /**
      * 初始化各种类加载器。
-     * 0.1
      */
     private void initClassLoaders() {
         try {
@@ -188,9 +193,10 @@ public final class Bootstrap {
                 commonLoader = this.getClass().getClassLoader();
             }
             //指向了commonLoader
-            catalinaLoader = createClassLoader("server", commonLoader);
+            catalinaLoader = createClassLoader("server", commonLoader);//(打一个断点观察catalinaLoader的值)
             //指向了commonLoader
-            sharedLoader = createClassLoader("shared", commonLoader);
+            sharedLoader = createClassLoader("shared", commonLoader);//(打断点观测sharedLoader的值。)
+
         } catch (Throwable t) {
             handleThrowable(t);
             log.error("Class loader creation threw exception", t);
@@ -297,11 +303,11 @@ public final class Bootstrap {
      *
      * 1. 初始化类加载器。
      * 2. 实例化Catalina对象。 daemon的设置。
+     * 3. Catalina去init Server对象。
      */
     public void init() throws Exception {
         //初始化类加载器。
-        initClassLoaders();
-
+        initClassLoaders();//(断点在这儿打一个。)
         Thread.currentThread().setContextClassLoader(catalinaLoader);
 
         SecurityClassLoad.securityClassLoad(catalinaLoader);
@@ -324,6 +330,7 @@ public final class Bootstrap {
         /**
          * 反射执行对应setParentClassLoader方法。
          * 详见{@link Catalina#setParentClassLoader(ClassLoader)}
+         * (打断点观测下获取的方法的名称和参数 以及真正执行的方法)
          */
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
@@ -492,7 +499,6 @@ public final class Bootstrap {
      * 2.3 执行对应操作。
      * 2.4 初始化
      * 2.5 加载。(实质是Catalina的加载。)
-     * 2.6
      *
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
@@ -500,7 +506,7 @@ public final class Bootstrap {
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
-
+        //断电可以在这儿打一个。
         synchronized (daemonLock) {
             if (daemon == null) { //tomcat没用启动。
                 // Don't set daemon until init() has completed
@@ -533,7 +539,11 @@ public final class Bootstrap {
 
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
-                daemon.load(args);
+                /**
+                 * daemon 变成了Catalina。去初始化了Catalina。
+                 * {@link Catalina#load()}
+                 */
+                daemon.load(args); //
                 daemon.start();
             } else if (command.equals("stopd")) {
                 args[args.length - 1] = "stop";
