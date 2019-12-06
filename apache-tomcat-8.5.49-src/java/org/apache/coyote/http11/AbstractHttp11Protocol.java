@@ -60,7 +60,10 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
         getEndpoint().setHandler(cHandler);
     }
 
-
+    /**
+     * 这个init方法没用看懂。
+     * @throws Exception
+     */
     @Override
     public void init() throws Exception {
         for (UpgradeProtocol upgradeProtocol : upgradeProtocols) {

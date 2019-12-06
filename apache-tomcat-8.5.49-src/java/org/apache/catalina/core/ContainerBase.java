@@ -893,7 +893,12 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     }
 
-
+    /**
+     *  子类Engine实际调用的父类方法。
+     *  1. 创建了起停线程池。(将Engine启动交给线程池.)
+     *  并没有对后续容器做初始化操作。此时初始化过程就完成了。所以其他的容器是在start阶段启动的。
+     * @throws LifecycleException
+     */
     @Override
     protected void initInternal() throws LifecycleException {
         BlockingQueue<Runnable> startStopQueue = new LinkedBlockingQueue<>();

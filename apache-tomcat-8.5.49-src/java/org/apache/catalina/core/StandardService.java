@@ -44,8 +44,9 @@ import org.apache.tomcat.util.res.StringManager;
  * Standard implementation of the <code>Service</code> interface.  The
  * associated Container is generally an instance of Engine, but this is
  * not required.
- *
+ * 通常是Engine的一个实例，但是并不是必须的。可以不是。建议这样做的意思吗。
  * @author Craig R. McClanahan
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 
 public class StandardService extends LifecycleMBeanBase implements Service {
@@ -524,17 +525,29 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     /**
      * Invoke a pre-startup initialization. This is used to allow connectors
      * to bind to restricted ports under Unix operating environments.
+     *
+     * Service的初始化,通过包括：
+     * 1. Engine的初始化工作。
+     * 2. 部分线程池的初始化工作。
+     * 3. MapperListener的初始化工作。
+     * 4. 多个Connector的初始化。
      */
     @Override
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
-
+        /**
+         * 初始化engine。可以点击进去看。
+         * 我们可以猜到,后面肯定是Host,Context,Wrapper,Servlet.
+         *  but,事实并不是如此。此时只是初始化过程.并不会初始化其余容器。其他几个容器的初始化操作是在start阶段完成的。
+         *  {@link StandardEngine#initInternal()}
+         */
         if (engine != null) {
             engine.init();
         }
 
         // Initialize any Executors
+        //初始化一些线程池
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());
@@ -543,12 +556,17 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         }
 
         // Initialize mapper listener
+        //初始化映射监听器。(Mapper作为从Service -->Mapper -->Adpter -->Container的链接。)
         mapperListener.init();
 
         // Initialize our defined Connectors
         synchronized (connectorsLock) {
             for (Connector connector : connectors) {
                 try {
+                    /**
+                     * Connector的初始化操作。
+                     * {@link Connector#initInternal()}
+                     */
                     connector.init();
                 } catch (Exception e) {
                     String message = sm.getString(

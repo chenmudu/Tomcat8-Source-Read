@@ -36,6 +36,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.security.SecurityConfig;
 import org.apache.juli.ClassLoaderLogManager;
 import org.apache.juli.logging.Log;
@@ -54,20 +55,25 @@ import org.xml.sax.SAXParseException;
 /**
  * Startup/Shutdown shell program for Catalina.  The following command line
  * options are recognized:
+ * 对Catalina启动/关闭操作的Shell程序而言，可以识别以下命令行选项。
  * <ul>
  * <li><b>-config {pathname}</b> - Set the pathname of the configuration file
  *     to be processed.  If a relative path is specified, it will be
  *     interpreted as relative to the directory pathname specified by the
  *     "catalina.base" system property.   [conf/server.xml]</li>
- * <li><b>-help</b>      - Display usage information.</li>
- * <li><b>-nonaming</b>  - Disable naming support.</li>
- * <li><b>configtest</b> - Try to test the config</li>
- * <li><b>start</b>      - Start an instance of Catalina.</li>
- * <li><b>stop</b>       - Stop the currently running instance of Catalina.</li>
+ *     设置要处理的配置文件的路径名称，如果指定了"相对路径"，将会被解释成相对于
+ *     “catalina.base”指定指定的的目录路径名的系统属性。你可以在conf文件夹下
+ *     的server.xml文件中看到。
+ * <li><b>-help</b>      - Display usage information.</li> 显示使用的信息。
+ * <li><b>-nonaming</b>  - Disable naming support.</li> 有效命名的支持。
+ * <li><b>configtest</b> - Try to test the config</li> 尝试测试配置。
+ * <li><b>start</b>      - Start an instance of Catalina.</li> Catalina实例的开启
+ * <li><b>stop</b>       - Stop the currently running instance of Catalina.</li> 关闭当前正在运行的Catalina实例。
  * </ul>
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class Catalina {
 
@@ -537,7 +543,7 @@ public class Catalina {
      *
      */
     public void load() {
-
+        //此处打一个断点观测是否跳到这儿了。
         if (loaded) {
             return;
         }
@@ -645,8 +651,12 @@ public class Catalina {
         initStreams();
 
         // Start the new server
+        /**
+         * 初始化Server.（断点可以打一个。）
+         * {@link StandardServer#initInternal()}
+         */
         try {
-            getServer().init();
+            getServer().init(); //
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
                 throw new java.lang.Error(e);

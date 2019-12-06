@@ -41,6 +41,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  * Mapper listener.
+ * 监听Service的生命周期以及其他行动,并将其委托给Mapper,Mapper作为Connector和Container链接的Adpter的映射。
  *
  * @author Remy Maucherat
  * @author Costin Manolache
