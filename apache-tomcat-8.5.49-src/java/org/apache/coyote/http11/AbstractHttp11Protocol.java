@@ -69,7 +69,9 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
         for (UpgradeProtocol upgradeProtocol : upgradeProtocols) {
             configureUpgradeProtocol(upgradeProtocol);
         }
-
+        /**
+         * {@link AbstractProtocol#init()}
+         */
         super.init();
     }
 

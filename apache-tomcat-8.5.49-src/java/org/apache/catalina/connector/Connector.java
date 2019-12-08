@@ -48,7 +48,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  * Implementation of a Coyote connector.
- *
+ * 作为将本地文件作为 HTTP 文档提供的普通 Web 服务器.
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
@@ -997,6 +997,10 @@ public class Connector extends LifecycleMBeanBase  {
         }
 
         try {
+            /**
+             * 此处请点:
+             * {@link AbstractHttp11JsseProtocol#init()}
+             */
             protocolHandler.init();
         } catch (Exception e) {
             throw new LifecycleException(

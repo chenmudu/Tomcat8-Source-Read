@@ -55,9 +55,12 @@ import org.apache.tomcat.util.res.StringManager;
 
 
 /**
+ * 关于: Coyote:coyote 本质上是为 tomcat 的容器提供了对底层 socket 连接数据的封装
+ *      ，以 Request 类的形式，让容器能够访问到底层的数据。
  * Implementation of a request processor which delegates the processing to a
  * Coyote processor.
- *
+ * 将请求委托给Coyote。
+ * 关于Coyote{@see https://webweavertech.com/costin/archives/000421.html?spm=a2c4e.10696291.0.0.72d519a4pexFrU?spm=a2c4e.10696291.0.0.72d519a4pexFrU}
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */

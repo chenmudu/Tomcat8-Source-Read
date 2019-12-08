@@ -208,10 +208,16 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
     /**
      * Initialize the endpoint.
+     * 1.绑定ServerSocketChannel的端口和Ip。以及允许链接的数量默认为100.
+     * 2.改变Channel的阻塞模式。
+     * 3.接收器和轮询器的线程数设置。
+     * 4.轮询器池的开启。
      */
     @Override
     public void bind() throws Exception {
-
+        /**
+         * set ServerSocket。设置Socket相关，并绑定对应接口。
+         */
         if (!getUseInheritedChannel()) {
             serverSock = ServerSocketChannel.open();
             socketProperties.setProperties(serverSock.socket());
@@ -227,6 +233,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 throw new IllegalArgumentException(sm.getString("endpoint.init.bind.inherited"));
             }
         }
+        /**
+         * 改变Channel的阻塞类型。
+         */
         serverSock.configureBlocking(true); //mimic APR behavior
 
         // Initialize thread count defaults for acceptor, poller

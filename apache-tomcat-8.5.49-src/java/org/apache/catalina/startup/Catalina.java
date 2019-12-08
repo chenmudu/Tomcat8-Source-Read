@@ -565,6 +565,7 @@ public class Catalina {
         File file = null;
         try {
             try {
+                //Tomcat8-Source-Read\catalina-home\conf\server.xml
                 file = configFile();
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
