@@ -42,6 +42,7 @@ import org.apache.tomcat.util.collections.SynchronizedStack;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.apache.tomcat.util.net.AbstractEndpoint.Handler;
+import org.apache.tomcat.util.net.NioEndpoint;
 import org.apache.tomcat.util.net.SocketEvent;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
@@ -577,7 +578,9 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         String endpointName = getName();
         endpoint.setName(endpointName.substring(1, endpointName.length()-1));
         endpoint.setDomain(domain);
-
+        /** 初始化NioEndPoint。并绑定对应接口。
+         *详见{@link NioEndpoint#bind()}
+         */
         endpoint.init();
     }
 

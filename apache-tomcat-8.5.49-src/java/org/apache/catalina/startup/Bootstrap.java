@@ -59,6 +59,9 @@ public final class Bootstrap {
      * Daemon object used by main.
      */
     private static final Object daemonLock = new Object();
+    /**
+     * 守护进程在init的时候被自身设置.设置了一系列的ClassLoader。
+     */
     private static volatile Bootstrap daemon = null;
 
     private static final File catalinaBaseFile;
@@ -190,6 +193,11 @@ public final class Bootstrap {
             commonLoader = createClassLoader("common", null);
             if (commonLoader == null) {
                 // no config file, default to this loader - we might be in a 'single' env.
+                /**
+                 * Connected to the target VM, address:127.0.0.1:1083 tranpsort:'socket'
+                 * 从Console中的日志可以看出。网络通讯有关。
+                 * Bootstrap.getClassLoader = URLClassLoader.
+                 */
                 commonLoader = this.getClass().getClassLoader();
             }
             //指向了commonLoader
@@ -497,8 +505,22 @@ public final class Bootstrap {
      * 2.1 创建Bootstrap(实例化)。
      * 2.2 检测运行命令。
      * 2.3 执行对应操作。
-     * 2.4 初始化
-     * 2.5 加载。(实质是Catalina的加载。)
+     * 2.4 Bootstrap初始化自身。(init自身。)
+     * 2.5 加载(load)Catalina。
+     *          2.5.1. Catalina初始化(init)Server
+     *              2.5.1.1 Server去初始化(init)了Service。
+     *                  2.5.1.1.1 Service去初始化(init)了Engine。
+     *                  2.5.1.1.2 Service去初始化(init)了Executor。
+     *                  2.5.1.1.3 Service去初始化(init)了Connector。
+     *                      2.5.1.1.3.1 Connector去初始化了ProtocolHandler.
+     *                          2.5.1.1.3.1.1 ProtocolHandler 初始化了EndPonit.
+     *          2.5.2  Catalina(开启) start了Server。
+     *              2.5.2.1 Server去开启(start)了Service。
+     *                  2.5.1.1.1 Service去开启(start)了Engine。
+     *                  2.5.1.1.2 Service去开启(start)了Executor。
+     *                  2.5.1.1.3 Service去开启(start)了Connector。
+     *                      2.5.1.1.3.1 Connector去初始化了ProtocolHandler.
+     *                          2.5.1.1.3.1.1 ProtocolHandler 初始化了EndPonit.
      *
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
@@ -539,16 +561,17 @@ public final class Bootstrap {
 
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
-                /**
-                 * daemon 变成了Catalina。去初始化了Catalina。
-                 * {@link Catalina#load()}
-                 */
+
                 daemon.load(args); //
                 daemon.start();
             } else if (command.equals("stopd")) {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+                /**
+                 * daemon 变成了Catalina。去初始化了Catalina。
+                 * {@link Catalina#load()}
+                 */
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();
