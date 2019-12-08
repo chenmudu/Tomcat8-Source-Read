@@ -70,6 +70,7 @@ public final class Bootstrap {
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
 
     /**
+
      * 1.静态代码块儿在类中的加载顺序。详见深入理解JVM。
      *  1.1 获取bin目录的绝对路径。
      *  1.2.设置安装目录的路径。
@@ -203,6 +204,7 @@ public final class Bootstrap {
             catalinaLoader = createClassLoader("server", commonLoader);//(打一个断点观察catalinaLoader的值)
             //指向了commonLoader
             sharedLoader = createClassLoader("shared", commonLoader);//(打断点观测sharedLoader的值。)
+
         } catch (Throwable t) {
             handleThrowable(t);
             log.error("Class loader creation threw exception", t);
@@ -314,7 +316,6 @@ public final class Bootstrap {
     public void init() throws Exception {
         //初始化类加载器。
         initClassLoaders();//(断点在这儿打一个。)
-
         Thread.currentThread().setContextClassLoader(catalinaLoader);
 
         SecurityClassLoad.securityClassLoad(catalinaLoader);
