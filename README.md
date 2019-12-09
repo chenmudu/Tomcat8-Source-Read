@@ -3,9 +3,6 @@
 [![standard-readme compliant](https://img.shields.io/github/downloads/chenmudu/Tomcat8-Source-Read/total?style=social)](https://github.com/chenmudu/Tomcat8-Source-Read)
 
 > Tomcat8-Source-Read(源码解读)
-
-- 当我写了不算很多的Web应用，我开始意识到这样下去，我自己甚至不会被自己称为开发者。所以我开始读工作中用到的JDK源码，Spring源码，SpringBoot源码，SpringCloud源码以及需要用到的任何源码，包括但不仅限于JDK，Apache-commons-lang,Guava，HttpClient的代码。在调用前我
-
 当你遇到以下类似问题时，`Tomcat8-Source-Read`可以帮你：
 0. 想系统的读一个开源软件的源码，但是不知道该读哪个开源项目。
 0. 读源码英文水平有限，每次需要借助翻译软件的生涩翻译才能持续Debug读下去，但是翻译的时候又浪费了巨多时间。
