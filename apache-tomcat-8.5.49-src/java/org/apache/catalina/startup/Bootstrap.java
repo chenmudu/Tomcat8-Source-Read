@@ -519,8 +519,8 @@ public final class Bootstrap {
      *                  2.5.1.1.1 Service去开启(start)了Engine。
      *                  2.5.1.1.2 Service去开启(start)了Executor。
      *                  2.5.1.1.3 Service去开启(start)了Connector。
-     *                      2.5.1.1.3.1 Connector去初始化了ProtocolHandler.
-     *                          2.5.1.1.3.1.1 ProtocolHandler 初始化了EndPonit.
+     *                      2.5.1.1.3.1 Connector去开启(start)了ProtocolHandler.
+     *                          2.5.1.1.3.1.1 ProtocolHandler 开启(start)了EndPonit.
      *
      * Main method and entry point when starting Tomcat via the provided
      * scripts.
