@@ -405,6 +405,7 @@ public final class Bootstrap {
 
     /**
      * Start the Catalina daemon.
+     * 反射去调用Catalina的start方法。{@link Catalina#start()}
      * @throws Exception Fatal start error
      */
     public void start() throws Exception {
@@ -413,6 +414,9 @@ public final class Bootstrap {
         }
 
         Method method = catalinaDaemon.getClass().getMethod("start", (Class [])null);
+        /**
+         * 反射去调用Catalina的start方法。{@link Catalina#start()}
+         */
         method.invoke(catalinaDaemon, (Object [])null);
     }
 
@@ -570,7 +574,10 @@ public final class Bootstrap {
             } else if (command.equals("start")) {
                 /**
                  * daemon 变成了Catalina。去初始化了Catalina。
+                 * 并将Catalina.await设置为true.{@link Catalina#await()}
+                 * 目的：在关闭窗口阻塞住监听关闭。将线程阻塞住。
                  * {@link Catalina#load()}
+                 * Catalina.setAwait, Catalina.load, Catalina.start()。。。。。
                  */
                 daemon.setAwait(true);
                 daemon.load(args);

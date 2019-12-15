@@ -38,6 +38,7 @@ import org.apache.catalina.Server;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.security.SecurityConfig;
+import org.apache.catalina.util.LifecycleBase;
 import org.apache.juli.ClassLoaderLogManager;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -690,22 +691,31 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     *  开始一个新的CatalinaServer实例。还是Bootstrap去调用的。
+     *  1.调用Server的start方法，start Server组件。以便Server去启动其他组件。
+     *
+     *  2.
      */
     public void start() {
-
+        //不重要
         if (getServer() == null) {
             load();
         }
-
+        //不重要
         if (getServer() == null) {
             log.fatal("Cannot start server. Server instance is not configured.");
             return;
         }
-
+        //Start Server的开始时间 用于日志打印启动的具体时间。
         long t1 = System.nanoTime();
 
-        // Start the new server
+        // Start the new server 开启一个新的Server
         try {
+            /**
+             *
+             * {@link LifecycleBase#start()} 注册生命周期事件给当前的所有lifecycleListeners内容。
+             * {@link StandardServer#startInternal()} 分别执行。
+             */
             getServer().start();
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);
@@ -738,7 +748,9 @@ public class Catalina {
                         false);
             }
         }
-
+        /**
+         *
+         */
         if (await) {
             await();
             stop();
@@ -873,6 +885,7 @@ public class Catalina {
     // XXX Should be moved to embedded !
     /**
      * Shutdown hook which will perform a clean shutdown of Catalina if needed.
+     * JVM关闭的钩子程函数，用于安全关闭Server及其自身上的其他组件。
      */
     protected class CatalinaShutdownHook extends Thread {
 
