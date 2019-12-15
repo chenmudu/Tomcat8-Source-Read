@@ -45,6 +45,11 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
      * in the queue and tasks that have been handed to a worker thread but the
      * latter did not start executing the task yet.
      * This number is always greater or equal to {@link #getActiveCount()}.
+     * 代表任务数量(提交但是还没有完成)，包括队列中以及提交给工作线程，但是工作线程还没有执行的 任务的数量。
+     * 总是大于等于{@link #getActiveCount()}
+     * 这个计数器的意义在于当tomcat重写了JDK原生线程池的逻辑，在捕获到拒绝异常时候去仍旧尝试去添加任务到
+     * 自定义的TaskQueue中可以当作参考。{@link #execute(Runnable, long, TimeUnit)} and
+     * {@link TaskQueue#offer(Runnable)}
      */
     private final AtomicInteger submittedCount = new AtomicInteger(0);
     private final AtomicLong lastContextStoppedTime = new AtomicLong(0L);
@@ -164,11 +169,20 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
     public void execute(Runnable command, long timeout, TimeUnit unit) {
         submittedCount.incrementAndGet();
         try {
+            /**
+             * tomcat ThreadPoolExecutor的I/O密集型的执行步骤
+             * 都在父类的execute方法的第二步里面。
+             */
             super.execute(command);
         } catch (RejectedExecutionException rx) {
+            /**
+             * 继续尝试添加队列,因为可能有大量线程此时释放。
+             * 毕竟I/O密集型特点不同于CPU密集型。
+             */
             if (super.getQueue() instanceof TaskQueue) {
                 final TaskQueue queue = (TaskQueue)super.getQueue();
                 try {
+                    //如果强制放入失败则抛异常即可。
                     if (!queue.force(command, timeout, unit)) {
                         submittedCount.decrementAndGet();
                         throw new RejectedExecutionException("Queue capacity is full.");

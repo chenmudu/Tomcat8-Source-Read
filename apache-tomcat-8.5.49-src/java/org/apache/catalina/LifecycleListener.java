@@ -32,7 +32,7 @@ public interface LifecycleListener {
 
     /**
      * Acknowledge the occurrence of the specified event.
-     *
+     * 确认时间的发生。
      * @param event LifecycleEvent that has occurred
      */
     public void lifecycleEvent(LifecycleEvent event);

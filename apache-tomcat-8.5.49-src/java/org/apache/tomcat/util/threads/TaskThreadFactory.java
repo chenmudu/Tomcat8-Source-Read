@@ -26,6 +26,7 @@ import org.apache.tomcat.util.security.PrivilegedSetTccl;
 /**
  * Simple task thread factory to use to create threads for an executor
  * implementation.
+ * 可以和JDK的DefaultThreadFactory做对比。{@link java.util.concurrent.Executors.DefaultThreadFactory}
  */
 public class TaskThreadFactory implements ThreadFactory {
 

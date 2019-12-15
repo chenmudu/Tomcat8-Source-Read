@@ -29,6 +29,10 @@ import org.apache.tomcat.util.threads.TaskQueue;
 import org.apache.tomcat.util.threads.TaskThreadFactory;
 import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
+/**
+ * 通用共享的线程池组件。基于I/O密集型，并非CPU密集型。
+ *  * tomcat线程池的优化点就在这里。
+ */
 public class StandardThreadExecutor extends LifecycleMBeanBase
         implements Executor, ResizableExecutor {
 
@@ -75,11 +79,13 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
 
     /**
      * prestart threads?
+     * 是否提前启动线程。
      */
     protected boolean prestartminSpareThreads = false;
 
     /**
      * The maximum number of elements that can queue up before we reject them
+     * 队列的最大长度。
      */
     protected int maxQueueSize = Integer.MAX_VALUE;
 
@@ -91,6 +97,9 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
     protected long threadRenewalDelay =
         org.apache.tomcat.util.threads.Constants.DEFAULT_THREAD_RENEWAL_DELAY;
 
+    /**
+     *
+     */
     private TaskQueue taskqueue = null;
     // ---------------------------------------------- Constructors
     public StandardThreadExecutor() {
@@ -112,12 +121,15 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
      *
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
+     *
+     *
      */
     @Override
     protected void startInternal() throws LifecycleException {
-
+        //重写了LinkedBlockingQueue的offer方法。
         taskqueue = new TaskQueue(maxQueueSize);
         TaskThreadFactory tf = new TaskThreadFactory(namePrefix,daemon,getThreadPriority());
+        //此ThreadPoolExecutor非彼ThreadPoolExecutor。
         executor = new ThreadPoolExecutor(getMinSpareThreads(), getMaxThreads(), maxIdleTime, TimeUnit.MILLISECONDS,taskqueue, tf);
         executor.setThreadRenewalDelay(threadRenewalDelay);
         if (prestartminSpareThreads) {

@@ -21,4 +21,4 @@
 
 ## 如何贡献(中英翻译,源码解读感想)
 
-非常欢迎你的加入! [提一个Issue](https://github.com/chenmudu/Tomcat-Source-Read/issues/new) 或者提交一个 Pull R equest.
+非常欢迎你的加入! [提一个Issue](https://github.com/chenmudu/Tomcat8-Source-Read/issues/new) 或者提交一个 Pull R equest.
