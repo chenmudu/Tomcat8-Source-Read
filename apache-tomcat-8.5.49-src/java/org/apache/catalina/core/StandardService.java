@@ -406,6 +406,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
      * Start nested components ({@link Executor}s, {@link Connector}s and
      * {@link Container}s) and implement the requirements of
      * {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
+     * 启动：Executors， Connectors。
      *
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used

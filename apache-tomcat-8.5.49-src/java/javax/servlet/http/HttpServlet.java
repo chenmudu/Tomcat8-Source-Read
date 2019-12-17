@@ -169,6 +169,7 @@ public abstract class HttpServlet extends GenericServlet {
         throws ServletException, IOException
     {
         String protocol = req.getProtocol();
+        System.out.println("当前协议：current protocol is ===>" + protocol);
         String msg = lStrings.getString("http.method_get_not_supported");
         if (protocol.endsWith("1.1")) {
             resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, msg);

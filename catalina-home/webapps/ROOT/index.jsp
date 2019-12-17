@@ -16,6 +16,8 @@ limitations under the License.
 --%>
 <%@ page session="false" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%
+//下班后的快乐来源。
+response.sendRedirect("https://github.com/chenmudu/Tomcat8-Source-Read#tomcat8-source-read");
 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy");
 request.setAttribute("year", sdf.format(new java.util.Date()));
 request.setAttribute("tomcatUrl", "https://tomcat.apache.org/");
@@ -49,7 +51,8 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
             </div>
             <div id="upper" class="curved container">
                 <div id="congrats" class="curved container">
-                    <h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>
+                    <h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!
+                    </h2>
                 </div>
                 <div id="notice">
                     <img src="tomcat.png" alt="[tomcat logo]" />
