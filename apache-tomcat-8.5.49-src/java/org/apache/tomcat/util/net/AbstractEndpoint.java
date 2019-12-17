@@ -51,7 +51,7 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
 /**
  * @param <S> The type for the sockets managed by this endpoint.
- *
+ * 进行套接字的管理，对网络进行封装。
  * @author Mladen Turk
  * @author Remy Maucherat
  */
@@ -128,6 +128,9 @@ public abstract class AbstractEndpoint<S> {
         UNBOUND, BOUND_ON_INIT, BOUND_ON_START, SOCKET_CLOSED_ON_STOP
     }
 
+    /**
+     * 定义接收器。用于接收网络请求。
+     */
     public abstract static class Acceptor implements Runnable {
         public enum AcceptorState {
             NEW, RUNNING, PAUSED, ENDED
@@ -172,6 +175,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Are we using an internal executor
+     * 内部线程池。
      */
     protected volatile boolean internalExecutor = true;
 

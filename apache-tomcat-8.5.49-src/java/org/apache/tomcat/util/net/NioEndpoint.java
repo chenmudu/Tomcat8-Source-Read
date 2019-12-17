@@ -54,7 +54,9 @@ import org.apache.tomcat.util.net.AbstractEndpoint.Handler.SocketState;
 import org.apache.tomcat.util.net.jsse.JSSESupport;
 
 /**
+ * 负责接收处理 socket
  * NIO tailored thread pool, providing the following services:
+ * NIO定义的线程池，可以实现以下功能：监听线程 Acceptor、socket NIO poller 线程、以及请求处理线程池。
  * <ul>
  * <li>Socket acceptor thread</li>
  * <li>Socket poller thread</li>
@@ -63,9 +65,15 @@ import org.apache.tomcat.util.net.jsse.JSSESupport;
  *
  * When switching to Java 5, there's an opportunity to use the virtual
  * machine's thread pool.
+ * 当选择了JAVA5以后，我们使用的就是虚拟机的线程池了。
+ *
+ * Acceptor(SocketChannel封装成NioChannel)  ----> (queue(event queue)) --->Poller(Selector )--->(Worker)
+ * Acceptor接收socket线程封装成NioChannel并放入队列，Poller负责从队列中取出对应的Channel对象。
+ * 然后Poller通过Selector对象遍历数据并传递给Worker中的线程。Worker线程解析成HttpServletRequest对象.
  *
  * @author Mladen Turk
- * @author Remy Maucherat
+ * @author Remy MaucheratNioChannel
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 

@@ -68,8 +68,35 @@
     -->
     <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="8443" />
-    <!-- A "Connector" using the shared thread pool-->
+               redirectPort="8443"
+
+    />
+    <!-- A "Connector" using the shared thread pool
+    tomcat优化时的参数：
+    acceptCount: 连接请求暂存队列的大小。当前版本默认为100.
+    acceptorThreadCount：用于接收连接的线程数，非 keep-alive,可以增加。默认为1.
+    acceptorThreadPriority： 接收器接收请求线程的级别，默认为JDK中线程的级别为5的。
+    connectionTimeout：默认是60.server.xml设置为20.看上面。
+    executor： 线程池，没有指定，使用private的内部线程池。
+    maxConnections：最大连接书
+    maxCookieCount：默认是200个Cookie.
+    maxExtensionSize: Http消息分块后的小块儿的长度。默认是8192.
+    maxHttpHeaderSize：header长度。默认是8192B. 即8KB。
+    maxKeepAliveRequests：最大长连接请求数。默认是100.
+    maxSwallowSize: requestBody的最大长度。默认为2M.
+    maxThreads: 连接器使请求处理的线程的最大数量。决定并发的关键因素。
+    processorCache： 缓存对象的大小。如果没有使用3.0的异步。设置为和maxThreads相同性能最佳。反之不可。
+                    SpringCloud GetWay使用的是3.0，可做优化。
+    maxHeaderCount: request请求头的最大数量。默认100.
+    maxParameterCount： 请求提参数对数的最大限制。默认10K.
+    maxPostSize：最大为2M.
+    selectorTimeout： 连接器处理事件。默认1S.不要设置太高。NIO快就快在这里。
+    useSendfile： 默认为true。sendFile不说了吧。傻子都知道。
+    socket.directBuffer：  -XX:MaxDirectMemorySize=256m.
+    socket.appReadBufSize： 重要的参数优化。每个连接分配的大小。并发小的时候可以设置大一些。默认为8192.
+    socket.appWriteBufSize： 同上。
+    socket.bufferPool：减少垃圾回收，Connector缓存了NioChannel对象。
+    -->
     <!--
     <Connector executor="tomcatThreadPool"
                port="8080" protocol="HTTP/1.1"
