@@ -286,7 +286,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             }
 
             initializeConnectionLatch();
-
+            /**
+             * 轮询器线程的启动
+             */
             // Start poller threads
             pollers = new Poller[getPollerThreadCount()];
             for (int i=0; i<pollers.length; i++) {
@@ -296,7 +298,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 pollerThread.setDaemon(true);
                 pollerThread.start();
             }
-
+            /**
+             * {@link AbstractEndpoint#startAcceptorThreads()}
+             */
             startAcceptorThreads();
         }
     }

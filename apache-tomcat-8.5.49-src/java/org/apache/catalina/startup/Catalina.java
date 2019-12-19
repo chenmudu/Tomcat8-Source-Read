@@ -690,11 +690,15 @@ public class Catalina {
 
 
     /**
-     * Start a new server instance.
-     *  开始一个新的CatalinaServer实例。还是Bootstrap去调用的。
-     *  1.调用Server的start方法，start Server组件。以便Server去启动其他组件。
      *
-     *  2.
+     * {@link Bootstrap#start()}启动了此方法。
+     * 目前的流程：
+     * 1. BootStrap反射调用Cataline启动方法。
+     * 2. Catalina启动方法去调用StandardServer的start方法。(点进去看。)
+     *   {@link StandardServer#startInternal()}
+     * 3.wait主线程。
+     * Start a new server instance.
+     *
      */
     public void start() {
         //不重要
@@ -714,6 +718,7 @@ public class Catalina {
             /**
              *
              * {@link LifecycleBase#start()} 注册生命周期事件给当前的所有lifecycleListeners内容。
+             *  直接跳到下面：
              * {@link StandardServer#startInternal()} 分别执行。
              */
             getServer().start();

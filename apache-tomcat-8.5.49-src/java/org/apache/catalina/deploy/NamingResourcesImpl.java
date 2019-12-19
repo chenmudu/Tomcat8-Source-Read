@@ -990,7 +990,10 @@ public class NamingResourcesImpl extends LifecycleMBeanBase
         }
     }
 
-
+    /**
+     * 命名解析的启动方法。
+     * @throws LifecycleException
+     */
     @Override
     protected void startInternal() throws LifecycleException {
         fireLifecycleEvent(CONFIGURE_START_EVENT, null);

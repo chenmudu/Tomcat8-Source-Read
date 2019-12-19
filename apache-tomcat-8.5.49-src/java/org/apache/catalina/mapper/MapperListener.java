@@ -96,14 +96,21 @@ public class MapperListener extends LifecycleMBeanBase
     public void startInternal() throws LifecycleException {
 
         setState(LifecycleState.STARTING);
-
+        /**
+         * StandardEngine
+         */
         Engine engine = service.getContainer();
         if (engine == null) {
             return;
         }
-
+        /***
+         * 为映射注入对应Host容器。
+         */
         findDefaultHost();
 
+        /**
+         * 增加对应的监听。
+         */
         addListeners(engine);
 
         Container[] conHosts = engine.findChildren();
@@ -111,6 +118,10 @@ public class MapperListener extends LifecycleMBeanBase
             Host host = (Host) conHost;
             if (!LifecycleState.NEW.equals(host.getState())) {
                 // Registering the host will register the context and wrappers
+                /**
+                 * 注册Host的时候将会注册Context和多个Wrapper。
+                 * {@link MapperListener#registerHost(org.apache.catalina.Host)}
+                 */
                 registerHost(host);
             }
         }

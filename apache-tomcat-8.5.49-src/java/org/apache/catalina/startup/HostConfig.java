@@ -60,6 +60,7 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Manager;
+import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.security.DeployXmlPermission;
@@ -412,6 +413,15 @@ public class HostConfig implements LifecycleListener {
 
 
     /**
+     *  ContainerBase调用。
+     *
+     * 部署了Webapp的内容。(定时扫描 热部署。)
+     * 1. server.xml中host结点的context结点。
+     * 2. 打成War包部署。
+     * 3. 在WebApp下建一个目录部署。(Future框架启动线程池去部署)  我们公司的Work环境应该用的这种方式。
+     *
+     *  再去看下内部类：DeployDirectory.run方法内部类。
+     *
      * Deploy applications for any directories or WAR files that are found
      * in our "application root" directory.
      */
@@ -1050,6 +1060,10 @@ public class HostConfig implements LifecycleListener {
 
 
     /**
+     *
+     *   解析server.xml文件里的StandarContext结点。
+     *   并加入到Host结点上。这样就吧Context启动并且构造了Host和Context的关系。
+     *
      * Deploy exploded webapp.
      * @param cn The context name
      * @param dir The path to the root folder of the weapp
@@ -1541,6 +1555,8 @@ public class HostConfig implements LifecycleListener {
 
     /**
      * Process a "start" event for this Host.
+     * {@link ContainerBase#startInternal()}方法调用了此方法。
+     * 为这个Host处理start。重点在于{@link HostConfig#deployApps()}()
      */
     public void start() {
 

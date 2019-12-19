@@ -251,11 +251,21 @@ public class StandardEngine extends ContainerBase implements Engine {
 
 
     /**
+     1.BootStrap反射调用Catalina的start。
+     * 2.Catalina去调用了StandardServer的start方法。
+     * 3.StandardServer调用StandardService的start方法。
+     * 4.StandardService调用StandarEngine的start方法。
+     * 5.StandarEngine调用ContainerBase的start方法。(重点)
+     *
+     *
      * Start this component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
+     *
+     *
+     *
      */
     @Override
     protected synchronized void startInternal() throws LifecycleException {

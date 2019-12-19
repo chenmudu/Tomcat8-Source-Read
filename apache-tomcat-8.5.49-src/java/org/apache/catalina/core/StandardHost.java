@@ -805,6 +805,20 @@ public class StandardHost extends ContainerBase implements Host {
 
 
     /**
+     1.BootStrap反射调用Catalina的start。
+     * 2.Catalina去调用了StandardServer的start方法。
+     * 3.StandardServer调用StandardService的start方法。
+     * 4.StandardService调用StandarEngine的start方法。
+     * 5.StandarEngine调用ContainerBase的start方法。(重点)
+     * 6.ContainerBase的start方法：
+         6.1 日志。
+         6.2 安全。
+         6.3 启动所有子容器(ChildList Future框架启动线程池去启动子结点)。启动子结点重点。
+            6.3.1 StandardHost
+                6.3.1.1 错误报告。
+                6.3.1.2 继续调用ContainnerBase。
+         6.4 Pipeline的初始化。
+         6.5 启动后台线程。
      * Start this component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
