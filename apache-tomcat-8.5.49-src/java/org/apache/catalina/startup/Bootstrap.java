@@ -581,6 +581,10 @@ public final class Bootstrap {
                  */
                 daemon.setAwait(true);
                 daemon.load(args);
+                /**
+                 * 容器启动的入口。
+                 * {@link Bootstrap#start()}
+                 */
                 daemon.start();
                 if (null == daemon.getServer()) {
                     System.exit(1);

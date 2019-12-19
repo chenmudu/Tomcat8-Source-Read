@@ -33,6 +33,7 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.util.LifecycleMBeanBase;
+import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.Adapter;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.UpgradeProtocol;
@@ -1012,6 +1013,8 @@ public class Connector extends LifecycleMBeanBase  {
     /**
      * Begin processing requests via this Connector.
      *
+     * 开始通过此连接器处理请求。
+     *
      * @exception LifecycleException if a fatal startup error occurs
      */
     @Override
@@ -1026,6 +1029,11 @@ public class Connector extends LifecycleMBeanBase  {
         setState(LifecycleState.STARTING);
 
         try {
+
+            /**
+             * {Http11NioProtocol}
+             * {@link AbstractProtocol#start()}
+             */
             protocolHandler.start();
         } catch (Exception e) {
             throw new LifecycleException(

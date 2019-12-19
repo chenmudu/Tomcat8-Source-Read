@@ -748,6 +748,11 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
 
 
     /**
+     *
+     * 1.BootStrap反射调用Catalina的start。
+     * 2.Catalina去调用了StandardServer的start方法。
+     *  此方法就是Catalina的start方法。他会去调用StandardService的方法。
+     *  {@link StandardService#startInternal()}
      * Start nested components ({@link Service}s) and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
@@ -766,10 +771,15 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         setState(LifecycleState.STARTING);
         /**
          * NamingResourcesImpl
+         * {@link NamingResourcesImpl#startInternal()}
          */
         globalNamingResources.start();
 
         // Start our defined Services
+        /**
+         * 注册所有的服务。
+         * 1.{@link StandardService#startInternal()}
+         */
         synchronized (servicesLock) {
             for (int i = 0; i < services.length; i++) {
                 services[i].start();

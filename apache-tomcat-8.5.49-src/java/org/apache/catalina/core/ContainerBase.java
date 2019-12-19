@@ -58,6 +58,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.startup.HostConfig;
 import org.apache.catalina.util.ContextName;
 import org.apache.catalina.util.LifecycleMBeanBase;
 import org.apache.juli.logging.Log;
@@ -913,6 +914,28 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
 
     /**
+     1.BootStrap反射调用Catalina的start。
+     * 2.Catalina去调用了StandardServer的start方法。
+     * 3.StandardServer调用StandardService的start方法。
+     * 4.StandardService调用StandarEngine的start方法。
+     * 5.StandarEngine调用ContainerBase的start方法。(重点)
+     * 6.ContainerBase的start方法：
+     *          6.1 日志。
+     *          6.2 安全。
+     *          6.3 启动所有子容器(ChildList Future框架启动线程池去启动子结点)。启动子结点重点。
+     *                  (Engin -> Host -> Context-> Wrapper 层级调用。
+     *                      共享父类的方法，针对不同的容器处理不同。)
+     *                      HostConfig类添加所有的Context结点。
+     *                      然后在此类中进行启动。包括StandardContext结点。
+     *                      StandardContext结点通过Web.xml文件，用ContextConfig添加了
+     *                      所有的子节点。
+     *                      然后在StandardContext去启动了StandardWrapper。
+     *                      StandardWrapper load and start。
+     *          6.4 Pipeline的启动。
+     *          6.5 激发HostConfig监听器。
+     *          (HostConfig ->t添加Host。) {@link HostConfig#start()}
+     *          6.6 启动后台线程。
+     *
      * Start this component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
@@ -1303,6 +1326,11 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         String threadName = "ContainerBackgroundProcessor[" + toString() + "]";
         thread = new Thread(new ContainerBackgroundProcessor(), threadName);
         thread.setDaemon(true);
+        /**
+         *
+         * ContainerBackgroundProcessor[StandardEngine[Catalina]]
+         * {@link ContainerBase#threadStart()}
+         */
         thread.start();
 
     }

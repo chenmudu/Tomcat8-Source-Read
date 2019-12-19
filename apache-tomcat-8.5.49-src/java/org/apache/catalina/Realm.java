@@ -28,10 +28,10 @@ import org.ietf.jgss.GSSContext;
 
 /**
  * A <b>Realm</b> is a read-only facade for an underlying security realm
- * used to authenticate individual users, and identify the security roles
- * associated with those users.  Realms can be attached at any Container
- * level, but will typically only be attached to a Context, or higher level,
- * Container.
+ *  * used to authenticate individual users, and identify the security roles
+ *  * associated with those users.  Realms can be attached at any Container
+ *  * level, but will typically only be attached to a Context, or higher level,
+ *  * Container.
  *
  * @author Craig R. McClanahan
  */

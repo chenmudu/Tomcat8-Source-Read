@@ -590,9 +590,15 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         if (getLog().isInfoEnabled()) {
             getLog().info(sm.getString("abstractProtocolHandler.start", getName()));
         }
-
+        /**
+         * {@link NioEndpoint#startInternal()}
+         */
         endpoint.start();
 
+
+        /**
+         * new Thread,作用于超时时间的控制。默认是1分钟好像。看下server.xml文件就知道了。
+         */
         // Start timeout thread
         asyncTimeout = new AsyncTimeout();
         Thread timeoutThread = new Thread(asyncTimeout, getNameInternal() + "-AsyncTimeout");

@@ -403,6 +403,15 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
+     *
+     * 1.BootStrap反射调用Catalina的start。
+     * 2.Catalina去调用了StandardServer的start方法。
+     * 3.StandardServer调用StandardService的start方法。
+     * 4.StandardService调用StandarEngine的start方法。
+     *
+     *
+     * MapperListener start。
+     * Connector start。
      * Start nested components ({@link Executor}s, {@link Connector}s and
      * {@link Container}s) and implement the requirements of
      * {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
@@ -419,18 +428,30 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         setState(LifecycleState.STARTING);
 
         // Start our defined Container first
+        /***
+         * 1.{@link StandardEngine#startInternal()}
+         */
         if (engine != null) {
             synchronized (engine) {
+                /** Engin引擎启动。
+                 * {@link StandardEngine#startInternal()}
+                 */
                 engine.start();
             }
         }
 
         synchronized (executors) {
             for (Executor executor: executors) {
+                /**
+                 * 线程池的启动。
+                 */
                 executor.start();
             }
         }
-
+        /**
+         * Connector和Container之间的映射器的启动。
+         * {@link MapperListener#startInternal()}
+         */
         mapperListener.start();
 
         // Start our defined Connectors second
@@ -439,6 +460,9 @@ public class StandardService extends LifecycleMBeanBase implements Service {
                 try {
                     // If it has already failed, don't try and start it
                     if (connector.getState() != LifecycleState.FAILED) {
+                        /**
+                         * {@link Connector#startInternal()}
+                         */
                         connector.start();
                     }
                 } catch (Exception e) {

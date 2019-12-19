@@ -1201,7 +1201,10 @@ public abstract class AbstractEndpoint<S> {
     protected final void startAcceptorThreads() {
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];
-
+        /**
+         * 1.创建接收器。
+         * 2.并启动对应线程。
+         */
         for (int i = 0; i < count; i++) {
             acceptors[i] = createAcceptor();
             String threadName = getName() + "-Acceptor-" + i;

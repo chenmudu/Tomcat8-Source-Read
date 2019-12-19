@@ -78,10 +78,10 @@
     acceptorThreadPriority： 接收器接收请求线程的级别，默认为JDK中线程的级别为5的。
     connectionTimeout：默认是60.server.xml设置为20.看上面。
     executor： 线程池，没有指定，使用private的内部线程池。
-    maxConnections：最大连接书
+    maxConnections：最大连接数。
     maxCookieCount：默认是200个Cookie.
     maxExtensionSize: Http消息分块后的小块儿的长度。默认是8192.
-    maxHttpHeaderSize：header长度。默认是8192B. 即8KB。
+    maxHttpHeaderSize：header长度。默认是8192B。. 即8KB。
     maxKeepAliveRequests：最大长连接请求数。默认是100.
     maxSwallowSize: requestBody的最大长度。默认为2M.
     maxThreads: 连接器使请求处理的线程的最大数量。决定并发的关键因素。
