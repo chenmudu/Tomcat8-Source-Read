@@ -3,7 +3,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/chenmudu/Tomcat8-Source-Read?color=pink&label=%E2%AD%90&logoColor=black)](https://github.com/chenmudu/Tomcat8-Source-Read/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/chenmudu/Tomcat8-Source-Read?color=pink&label=%F0%9F%90%B7%28fork%29)](https://github.com/chenmudu/Tomcat8-Source-Read/network)
 [![GitHub issues](https://img.shields.io/github/issues/chenmudu/Tomcat8-Source-Read?label=%F0%9F%98%95%28issue%29&style=social)](https://github.com/chenmudu/Tomcat8-Source-Read/issues)
-[![standard-readme compliant](https://img.shields.io/github/downloads/chenmudu/Tomcat8-Source-Read/total?style=social)](https://github.com/chenmudu/Tomcat8-Source-Read)
+[![Github downloads](https://img.shields.io/github/downloads/chenmudu/Tomcat8-Source-Read/total?style=social)](https://codeload.github.com/chenmudu/Tomcat8-Source-Read/zip/master)
 
 > Tomcat8-Source-Read(源码解读)
 
