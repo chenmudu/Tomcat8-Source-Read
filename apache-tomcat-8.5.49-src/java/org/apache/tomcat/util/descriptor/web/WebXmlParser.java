@@ -69,6 +69,7 @@ public class WebXmlParser {
 
     /**
      * Parse a web descriptor at a location.
+     * 解析指定位置上的Web描述。就是那个Web.xml文件。
      *
      * @param url the location; if null no load will be attempted
      * @param dest the instance to be populated by the parse operation

@@ -272,13 +272,16 @@ public class ContextConfig implements LifecycleListener {
 
     /**
      * Process events for an associated Context.
-     *
+     * 处理所有关联Context的事件。包括Web启动噢。
      * @param event The lifecycle event that has occurred
      */
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
 
         // Identify the context we are associated with
+        /**
+         * 认定我们关联的context。
+         */
         try {
             context = (Context) event.getLifecycle();
         } catch (ClassCastException e) {
@@ -288,6 +291,9 @@ public class ContextConfig implements LifecycleListener {
 
         // Process the event that has occurred
         if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+            /**
+             * 监听到configure_start事件后。
+             */
             configureStart();
         } else if (event.getType().equals(Lifecycle.BEFORE_START_EVENT)) {
             beforeStart();
@@ -750,6 +756,8 @@ public class ContextConfig implements LifecycleListener {
 
     /**
      * Process a "contextConfig" event for this Context.
+     * ContextConfig监听器为这个Context处理一个contextConfig事件。
+     * 解析web.xml事件。
      */
     protected synchronized void configureStart() {
         // Called from StandardContext.start()
@@ -1073,6 +1081,12 @@ public class ContextConfig implements LifecycleListener {
      * where there is duplicate configuration, the most specific level wins. ie
      * an application's web.xml takes precedence over the host level or global
      * web.xml file.
+     * (按照规范扫描Application中的web.xml文件并将其合并。)
+     * over the host level or global web.xml file.应用内配置的web.xml高于Host/全局的。
+     * 解析Web.xml。当年的SSM里面配置的内容。
+     * <listener>
+     *         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+     * </listener>
      */
     protected void webConfig() {
         /*
@@ -1110,6 +1124,11 @@ public class ContextConfig implements LifecycleListener {
 
         // Parse context level web.xml
         InputSource contextWebXml = getContextWebXmlSource();
+        /**
+         * 1. 使用WebRuleSet规则。
+         * 2. 读取Web.xml内容。
+         * 3. 将2的内容设置到webXml对象中。
+         */
         if (!webXmlParser.parseWebXml(contextWebXml, webXml, false)) {
             ok = false;
         }
@@ -1117,6 +1136,7 @@ public class ContextConfig implements LifecycleListener {
         ServletContext sContext = context.getServletContext();
 
         // Ordering is important here
+        //排序在这里非常重要。
 
         // Step 1. Identify all the JARs packaged with the application and those
         // provided by the container. If any of the application JARs have a
@@ -1158,6 +1178,9 @@ public class ContextConfig implements LifecycleListener {
 
             // Step 9. Apply merged web.xml to Context
             if (ok) {
+                /**
+                 * web.xml解析出来的组件设置到StandarContext内。包括Servlet， Filter， Listener.
+                 */
                 configureContext(webXml);
             }
         } else {
@@ -1240,7 +1263,12 @@ public class ContextConfig implements LifecycleListener {
         javaClassCache.clear();
     }
 
-
+    /**
+     * 解析web.xml组件到WebXml对象中。
+     * 并吧WebXml对象设置到StandardContext上去。
+     * 包括filter，servlet，listener.
+     * @param webxml
+     */
     private void configureContext(WebXml webxml) {
         // As far as possible, process in alphabetical order so it is easy to
         // check everything is present
@@ -1248,6 +1276,9 @@ public class ContextConfig implements LifecycleListener {
         context.setPublicId(webxml.getPublicId());
 
         // Everything else in order
+        /**
+         * 除了PublicId以外的东西。都按照顺序来进行设置。
+         */
         context.setEffectiveMajorVersion(webxml.getMajorVersion());
         context.setEffectiveMinorVersion(webxml.getMinorVersion());
 
@@ -1258,18 +1289,30 @@ public class ContextConfig implements LifecycleListener {
                 webxml.getDenyUncoveredHttpMethods());
         context.setDisplayName(webxml.getDisplayName());
         context.setDistributable(webxml.isDistributable());
+        /**
+         * 多个EJB本地变量。这个现在应该没人用了吧。不过这个思想值得学习。
+         */
         for (ContextLocalEjb ejbLocalRef : webxml.getEjbLocalRefs().values()) {
             context.getNamingResources().addLocalEjb(ejbLocalRef);
         }
         for (ContextEjb ejbRef : webxml.getEjbRefs().values()) {
             context.getNamingResources().addEjb(ejbRef);
         }
+        /**
+         * 设置多个Context环境。
+         */
         for (ContextEnvironment environment : webxml.getEnvEntries().values()) {
             context.getNamingResources().addEnvironment(environment);
         }
+        /**
+         * 配置的错误页面。
+         */
         for (ErrorPage errorPage : webxml.getErrorPages().values()) {
             context.addErrorPage(errorPage);
         }
+        /**
+         * 过滤器的加载是没有顺序的？ 不。LinkedHashMap。有顺序的。
+         */
         for (FilterDef filter : webxml.getFilters().values()) {
             if (filter.getAsyncSupported() == null) {
                 filter.setAsyncSupported("false");
@@ -1280,9 +1323,15 @@ public class ContextConfig implements LifecycleListener {
             context.addFilterMap(filterMap);
         }
         context.setJspConfigDescriptor(webxml.getJspConfigDescriptor());
+        /**
+         * 监听器的添加呐。
+         */
         for (String listener : webxml.getListeners()) {
             context.addApplicationListener(listener);
         }
+        /**
+         * 编码规则的添加。
+         */
         for (Entry<String, String> entry :
                 webxml.getLocaleEncodingMappings().entrySet()) {
             context.addLocaleEncodingMappingParameter(entry.getKey(),
@@ -1292,6 +1341,9 @@ public class ContextConfig implements LifecycleListener {
         if (webxml.getLoginConfig() != null) {
             context.setLoginConfig(webxml.getLoginConfig());
         }
+        /**
+         *
+         */
         for (MessageDestinationRef mdr :
                 webxml.getMessageDestinationRefs().values()) {
             context.getNamingResources().addMessageDestinationRef(mdr);
@@ -1334,6 +1386,7 @@ public class ContextConfig implements LifecycleListener {
             // Icons are ignored
 
             // jsp-file gets passed to the JSP Servlet as an init-param
+            // jsp-file 作为一个初始化的参数传递给Servlet。
 
             if (servlet.getLoadOnStartup() != null) {
                 wrapper.setLoadOnStartup(servlet.getLoadOnStartup().intValue());

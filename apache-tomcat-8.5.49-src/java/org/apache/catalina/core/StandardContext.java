@@ -2446,7 +2446,13 @@ public class StandardContext extends ContainerBase
         }
     }
 
-
+    /**
+     * 1.Pre。如: context.xml下的配置<PreResource>xxxxx</PreResource>
+     * 2 Main资源。WEB-INFO/的资源。包括classes & lib.
+     * 3.Jar资源。 <JarResource>xxx.</JarResource>
+     * 4.Post资源。<PostResource>xxx</PostResource>
+     * @return
+     */
     @Override
     public WebResourceRoot getResources() {
         Lock readLock = resourcesLock.readLock();
@@ -4853,6 +4859,7 @@ public class StandardContext extends ContainerBase
 
 
     /**
+     * 加载和初始化web.xml中所有标记着"load on startup"的servlets
      * Load and initialize all servlets marked "load on startup" in the
      * web application deployment descriptor.
      *
@@ -4902,6 +4909,7 @@ public class StandardContext extends ContainerBase
 
 
     /**
+     *  启动这个组件并实现基本的需求(很重要的地方)
      * Start this component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
@@ -5060,6 +5068,15 @@ public class StandardContext extends ContainerBase
                 }
 
                 // Notify our interested LifecycleListeners
+                /**
+                 * 发布config_start事件。
+                 * 这里面做了很多很多的事情。
+                 * 包括加载Web.xml中的内容到Context上下文中。
+                 * 以及初始化Spring的ContextLoaderListener监听器。
+                 * ContextLoaderListener实现 ServletContextListener
+                 * 接口，继承 ContextLoader 加载器。 把Tomcat与Spring
+                 * 连接到了一起。
+                 */
                 fireLifecycleEvent(Lifecycle.CONFIGURE_START_EVENT, null);
 
                 // Start our child containers, if not already started
@@ -5161,6 +5178,9 @@ public class StandardContext extends ContainerBase
             }
 
             // Configure and call application event listeners
+            /**
+             * 配置和调用监听器。
+             */
             if (ok) {
                 if (!listenerStart()) {
                     log.error(sm.getString("standardContext.listenerFail"));
@@ -5187,6 +5207,9 @@ public class StandardContext extends ContainerBase
             }
 
             // Configure and call application filters
+            /**
+             * 配置和调用filters。
+             */
             if (ok) {
                 if (!filterStart()) {
                     log.error(sm.getString("standardContext.filterFail"));
@@ -5195,6 +5218,12 @@ public class StandardContext extends ContainerBase
             }
 
             // Load and initialize all "load on startup" servlets
+            /**
+             * 加载并初始化所有的多个Listener。
+             * 包括Web.xml内配置的Spring的ContextLoaderListener 监听器。
+             * ContextLoaderListener 通过实现 ServletContextListener 接口，
+             * 继承 ContextLoader 加载器。 把 Tomcat 与 spring 连接到了一起。
+             */
             if (ok) {
                 if (!loadOnStartup(findChildren())){
                     log.error(sm.getString("standardContext.servletFail"));
