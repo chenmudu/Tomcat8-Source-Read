@@ -32,6 +32,9 @@ import org.apache.tomcat.util.res.StringManager;
  * If a RejectedExecutionHandler is not specified a default one will be configured
  * and that one will always throw a RejectedExecutionException
  *
+ * 等同于JDK线程池，但是比其实现更要高效。{@link #getSubmittedCount()}，这个方法用于正确处理工作队列。
+ * 如何没有配置拒绝策略。使用默认的拒绝策略：抛出异常。
+ * tomcat作者忘记说前提：你任务类型为I/O消耗型。而非CPU消耗型。
  */
 public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor {
     /**
@@ -47,7 +50,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
      * This number is always greater or equal to {@link #getActiveCount()}.
      * 代表任务数量(提交但是还没有完成)，包括队列中以及提交给工作线程，但是工作线程还没有执行的 任务的数量。
      * 总是大于等于{@link #getActiveCount()}
-     * 这个计数器的意义在于当tomcat重写了JDK原生线程池的逻辑，在捕获到拒绝异常时候去仍旧尝试去添加任务到
+     * 这个计数器的意义在于获取当前所有任务的数量和线程池内的线程数量做对比。
      * 自定义的TaskQueue中可以当作参考。{@link #execute(Runnable, long, TimeUnit)} and
      * {@link TaskQueue#offer(Runnable)}
      */

@@ -200,10 +200,13 @@ public final class Bootstrap {
                  */
                 commonLoader = this.getClass().getClassLoader();
             }
+            log.info("org.apache.catalina.startup.Bootstrap.initClassLoaders commonLoader 类型为:"+ commonLoader.getClass().getName());
             //指向了commonLoader
             catalinaLoader = createClassLoader("server", commonLoader);//(打一个断点观察catalinaLoader的值)
+            log.info("org.apache.catalina.startup.Bootstrap.initClassLoaders catalinaLoader 类型为:"+ catalinaLoader.getClass().getName());
             //指向了commonLoader
             sharedLoader = createClassLoader("shared", commonLoader);//(打断点观测sharedLoader的值。)
+            log.info("org.apache.catalina.startup.Bootstrap.initClassLoaders commonLoader 类型为:"+ commonLoader.getClass().getName());
 
         } catch (Throwable t) {
             handleThrowable(t);

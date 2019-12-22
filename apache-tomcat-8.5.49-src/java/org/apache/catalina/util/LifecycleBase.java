@@ -146,9 +146,11 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * Allow sub classes to fire {@link Lifecycle} events.
-     * 允许子类去触发对应的生命周期事件。
+     * 允许子类去触发对应的生命周期事件。(Spring的)
      * @param type  Event type
      * @param data  Data associated with event.
+     *
+     *  相应所有的config_start事件。包括最重要的ContextConfig 类。
      */
     protected void fireLifecycleEvent(String type, Object data) {
         LifecycleEvent event = new LifecycleEvent(this, type, data);

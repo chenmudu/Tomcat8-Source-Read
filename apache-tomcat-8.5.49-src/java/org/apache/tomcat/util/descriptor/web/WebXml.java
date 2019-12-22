@@ -255,7 +255,7 @@ public class WebXml extends XmlEncodingBase implements DocumentProperties.Encodi
         this.distributable = distributable;
     }
 
-    // deny-uncovered-http-methods
+    // deny uncovered http methods
     private boolean denyUncoveredHttpMethods = false;
     public boolean getDenyUncoveredHttpMethods() {
         return denyUncoveredHttpMethods;
