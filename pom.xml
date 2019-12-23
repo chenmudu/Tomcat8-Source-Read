@@ -10,6 +10,7 @@
     <version>1.0</version>    
     <packaging>pom</packaging> 
     <modules>    
-        <module>apache-tomcat-8.5.49-src</module>    
+        <module>apache-tomcat-8.5.49-src</module>
+        <module>common-api</module>
     </modules>    
 </project>

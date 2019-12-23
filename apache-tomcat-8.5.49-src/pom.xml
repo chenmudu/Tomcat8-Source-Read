@@ -72,6 +72,11 @@
             <groupId>org.eclipse.jdt.core.compiler</groupId>    
             <artifactId>ecj</artifactId>    
             <version>4.6.1</version>  
-        </dependency>    
-    </dependencies>    
+        </dependency>
+       <dependency>
+           <groupId>org.chenchen</groupId>
+           <artifactId>common-api</artifactId>
+           <version>FangZhiChengStation-1</version>
+       </dependency>
+   </dependencies>
 </project>
