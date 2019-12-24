@@ -4,10 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>chenchen</groupId>    
+    <groupId>org.chenmudu</groupId>
     <artifactId>apache-tomcat-8</artifactId>    
-    <name>apache-tomcat-8-source</name>    
-    <version>1.0</version>    
+    <name>apache-tomcat-8-source</name>
+    <!-- 西安地铁一号线某一站-->
+    <version>HanChengLoadStation-1</version>
     <packaging>pom</packaging> 
     <modules>    
         <module>apache-tomcat-8.5.49-src</module>

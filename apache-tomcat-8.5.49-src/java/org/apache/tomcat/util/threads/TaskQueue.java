@@ -61,6 +61,10 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
         super(c);
     }
 
+    /**
+     * 设置当前队列的父线程池为：Tomcat- I/0 - Executor
+     * @param tp
+     */
     public void setParent(ThreadPoolExecutor tp) {
         parent = tp;
     }

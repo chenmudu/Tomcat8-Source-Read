@@ -54,6 +54,7 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
  * 进行套接字的管理，对网络进行封装。
  * @author Mladen Turk
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public abstract class AbstractEndpoint<S> {
 
@@ -61,6 +62,10 @@ public abstract class AbstractEndpoint<S> {
 
     protected static final StringManager sm = StringManager.getManager(AbstractEndpoint.class);
 
+    /**
+     * 处理接收到的Socket，并调用对应的Processor去进行处理。
+     * @param <S>
+     */
     public static interface Handler<S> {
 
         /**
@@ -129,13 +134,26 @@ public abstract class AbstractEndpoint<S> {
     }
 
     /**
-     * 定义接收器。用于接收网络请求。
+     * 定义接收器用于监听请求。
+     * 子类包括NioEndPoint。
      */
     public abstract static class Acceptor implements Runnable {
+        /**
+         * 枚举值：用于定义当前接收器的状态。
+         */
         public enum AcceptorState {
             NEW, RUNNING, PAUSED, ENDED
         }
 
+        /**
+         * 多个线程可能都会去修改这个状态值。
+         * volatile保证的是可见性。
+         * 保证某个线程在修改这个状态值的时候完成的一瞬间。
+         * 其他线程去访问这个状态值的时候，自身的CacheLine失效。
+         * 强制去主存去读。虽然一定程度破化了Cpu的缓存机制。但是多线程就是如此。
+         *
+         * 这个状态在父类中进行初始化定义。剩下状态的改变来源于其子类。
+         */
         protected volatile AcceptorState state = AcceptorState.NEW;
         public final AcceptorState getState() {
             return state;
@@ -150,7 +168,7 @@ public abstract class AbstractEndpoint<S> {
         }
     }
 
-
+    //错误处理时间的专用点。
     private static final int INITIAL_ERROR_DELAY = 50;
     private static final int MAX_ERROR_DELAY = 1600;
 
@@ -164,12 +182,14 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Running state of the endpoint.
+     * EndPoint状态初始化的时候为NEW.
      */
     protected volatile boolean running = false;
 
 
     /**
      * Will be set to true whenever the endpoint is paused.
+     * EndPoint暂停的地方设置的状态值。
      */
     protected volatile boolean paused = false;
 
@@ -182,6 +202,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * counter for nr of connections handled by an endpoint
+     * 处理连接的计数器。
      */
     private volatile LimitLatch connectionLimitLatch = null;
 
@@ -200,6 +221,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Cache for SocketProcessor objects
+     * 缓存多个SocketProcessor对象。
      */
     protected SynchronizedStack<SocketProcessorBase<S>> processorCache;
 
@@ -425,6 +447,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Acceptor thread count.
+     * 用一个线程就足够。
      */
     protected int acceptorThreadCount = 1;
 
@@ -443,8 +466,11 @@ public abstract class AbstractEndpoint<S> {
     }
     public int getAcceptorThreadPriority() { return acceptorThreadPriority; }
 
-
+    /**
+     * 共享锁的
+     */
     private int maxConnections = 10000;
+
     public void setMaxConnections(int maxCon) {
         this.maxConnections = maxCon;
         LimitLatch latch = this.connectionLimitLatch;
@@ -893,6 +919,10 @@ public abstract class AbstractEndpoint<S> {
     }
 
 
+    /**
+     * 创建I/O密集型的线程池。
+     * 重点在内部。
+     */
     public void createExecutor() {
         internalExecutor = true;
         TaskQueue taskqueue = new TaskQueue();
@@ -901,6 +931,10 @@ public abstract class AbstractEndpoint<S> {
         taskqueue.setParent( (ThreadPoolExecutor) executor);
     }
 
+
+    /**
+     * 关闭线程池
+     */
     public void shutdownExecutor() {
         Executor executor = this.executor;
         if (executor != null && internalExecutor) {
@@ -928,6 +962,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Unlock the server socket accept using a bogus connection.
+     * Server Socket接收被解锁，使用的是一个假冒的连接。
      */
     protected void unlockAccept() {
         // Only try to unlock the acceptor if it is necessary
