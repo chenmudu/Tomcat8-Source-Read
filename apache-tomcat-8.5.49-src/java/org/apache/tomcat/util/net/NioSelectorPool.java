@@ -32,6 +32,7 @@ import org.apache.juli.logging.LogFactory;
 /**
  *
  * Thread safe non blocking selector pool
+ * 线程安全。非阻塞的轮询池。
  * @version 1.0
  * @since 6.0
  */
@@ -48,9 +49,18 @@ public class NioSelectorPool {
 
     protected NioBlockingSelector blockingSelector;
 
+    /**
+     * 共享轮询器。
+     */
     protected volatile Selector SHARED_SELECTOR;
 
+    /**
+     * 最大轮询器的个数。调优必备。
+     */
     protected int maxSelectors = 200;
+    /**
+     * 超时时间。
+     */
     protected long sharedSelectorTimeout = 30000;
     protected int maxSpareSelectors = -1;
     protected boolean enabled = true;

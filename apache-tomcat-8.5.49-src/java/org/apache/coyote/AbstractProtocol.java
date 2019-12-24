@@ -47,6 +47,10 @@ import org.apache.tomcat.util.net.SocketEvent;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
 
+/**
+ * 多个协议的抽象类。封装聚合集中功能。
+ * @param <S>
+ */
 public abstract class AbstractProtocol<S> implements ProtocolHandler,
         MBeanRegistration {
 
@@ -1153,6 +1157,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
     /**
      * Async timeout thread
+     * 检查异步Request的超时。
      */
     protected class AsyncTimeout implements Runnable {
 

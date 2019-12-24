@@ -17,6 +17,12 @@
 package org.apache.tomcat.util.collections;
 
 /**
+ *
+ * tomcat自定义数据结构。不需要GC的ConcurrentLinkedQueue的替代方案。
+ * 当你想创建一个可以重复使用的对象池，但不想收缩他。(只支持扩容，不支持减少。目的就是为了垃圾回收停顿)
+ * 主要目的是：最低内存消耗下实现无界容器。
+ * 数组维护，利用cacheLine,只支持扩容，不支持减少，
+ *
  * This is intended as a (mostly) GC-free alternative to
  * {@link java.util.concurrent.ConcurrentLinkedQueue} when the requirement is to
  * create a pool of re-usable objects with no requirement to shrink the pool.
@@ -24,9 +30,13 @@ package org.apache.tomcat.util.collections;
  * as possible with minimum garbage.
  *
  * @param <T> The type of object managed by this stack
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class SynchronizedStack<T> {
 
+    /**
+     * 默认的容量。
+     */
     public static final int DEFAULT_SIZE = 128;
     private static final int DEFAULT_LIMIT = -1;
 
@@ -38,6 +48,7 @@ public class SynchronizedStack<T> {
      */
     private int index = -1;
 
+    //数组元素。
     private Object[] stack;
 
 

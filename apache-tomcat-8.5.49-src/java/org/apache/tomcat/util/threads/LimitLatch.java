@@ -27,6 +27,13 @@ import org.apache.juli.logging.LogFactory;
  * Shared latch that allows the latch to be acquired a limited number of times
  * after which all subsequent requests to acquire the latch will be placed in a
  * FIFO queue until one of the shares is returned.
+ *
+ * tomcat自定义的共享锁。允许锁在有限时间内被获取。在这之后的所有获取锁的请求都会放在
+ * FIFO(队列内)，直至有一个请求拿到这个锁。
+ * 使请求到达 Endpoint 的时候可以在达到最大并发的时候进行等待，等待有处理完的连接释放资
+ * 源立刻按先进先出的顺序去处理连接，它起到了控制并发和缓冲的作用。
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class LimitLatch {
 

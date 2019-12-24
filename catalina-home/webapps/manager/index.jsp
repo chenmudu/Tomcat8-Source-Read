@@ -14,5 +14,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 --%>
-<%@ page session="false" trimDirectiveWhitespaces="true" %>
-<% response.sendRedirect(request.getContextPath() + "/html"); %>
+<%@ page session="false" trimDirectiveWhitespaces="true"  %>
+<%
+    response.setHeader("Content-Type", "text/html; charset=UTF-8");
+    response.sendRedirect(request.getContextPath() + "/html");
+%>

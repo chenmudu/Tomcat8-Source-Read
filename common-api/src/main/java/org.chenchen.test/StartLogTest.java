@@ -22,5 +22,7 @@ import java.time.format.DateTimeFormatter;
  * @Description:
  */
 public interface StartLogTest {
-    String CURRENT_LOCAL_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+    String CURRENT_LOCAL_DATE = DateTimeFormatter
+                                        .ofPattern("yyyy-MM-dd HH:mm:ss")
+                                        .format(LocalDateTime.now());
 }

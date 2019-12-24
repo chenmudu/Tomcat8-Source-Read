@@ -63,7 +63,10 @@ public abstract class AbstractJsseEndpoint<S> extends AbstractEndpoint<S> {
         this.sniParseLimit = sniParseLimit;
     }
 
-
+    /**
+     * 初始化SSL。
+     * @throws Exception
+     */
     protected void initialiseSsl() throws Exception {
         if (isSSLEnabled()) {
             sslImplementation = SSLImplementation.getInstance(getSslImplementationName());
