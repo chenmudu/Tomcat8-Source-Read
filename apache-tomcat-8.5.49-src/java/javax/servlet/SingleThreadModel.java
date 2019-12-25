@@ -35,6 +35,8 @@ package javax.servlet;
  * of the code accessing those resources. This interface is deprecated in
  * Servlet API version 2.4.
  *
+ * 确保Servlet一次仅仅只处理一个请求。标记接口。无方法。
+ *
  * @deprecated As of Java Servlet API 2.4, with no direct replacement.
  */
 @SuppressWarnings("dep-ann")
