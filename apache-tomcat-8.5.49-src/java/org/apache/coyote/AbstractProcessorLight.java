@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.coyote.http11.Http11Processor;
 import org.apache.juli.logging.Log;
 import org.apache.tomcat.util.net.AbstractEndpoint.Handler.SocketState;
 import org.apache.tomcat.util.net.DispatchType;
@@ -62,6 +63,10 @@ public abstract class AbstractProcessorLight implements Processor {
                 // Extra write event likely after async, ignore
                 state = SocketState.LONG;
             } else if (status == SocketEvent.OPEN_READ) {
+                /**
+                 * 调用对应的Service方法.
+                 * {@link Http11Processor#service(org.apache.tomcat.util.net.SocketWrapperBase)}
+                 */
                 state = service(socketWrapper);
             } else if (status == SocketEvent.CONNECT_FAIL) {
                 logAccess(socketWrapper);

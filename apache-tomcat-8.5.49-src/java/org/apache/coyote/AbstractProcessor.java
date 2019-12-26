@@ -63,7 +63,13 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
      */
     private volatile long asyncTimeoutGeneration = 0;
     protected final AbstractEndpoint<?> endpoint;
+    /**
+     * 熟悉的请求对象.
+     */
     protected final Request request;
+    /**
+     * 熟悉的响应对象.
+     */
     protected final Response response;
     protected volatile SocketWrapperBase<?> socketWrapper = null;
     protected volatile SSLSupport sslSupport;

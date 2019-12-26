@@ -894,6 +894,10 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     // ------------------------------------------------------------- Common code
 
+    /**
+     * 调用 Http11Processor的构造方法.
+     * @return
+     */
     @Override
     protected Processor createProcessor() {
         Http11Processor processor = new Http11Processor(this, getEndpoint());

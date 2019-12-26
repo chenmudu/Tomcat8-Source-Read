@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.connector.CoyoteAdapter;
 import org.apache.coyote.AbstractProcessor;
 import org.apache.coyote.ActionCode;
 import org.apache.coyote.ErrorState;
@@ -64,6 +65,13 @@ import org.apache.tomcat.util.net.SendfileState;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
 
+/**
+ * 处理协议的关键类.
+ * 牛皮至极的类.
+ * 此类通过持有的NioSocketWrapper去读写数据.
+ * 此类被Tomcat自定义的I/O密集型线程池内的线程调用..
+ * 运行此类的线程总是阻塞在I/O的读写上.
+ */
 public class Http11Processor extends AbstractProcessor {
 
     private static final Log log = LogFactory.getLog(Http11Processor.class);
@@ -179,6 +187,15 @@ public class Http11Processor extends AbstractProcessor {
     protected SendfileDataBase sendfileData = null;
 
 
+    /**
+     * Http11 NIO处理器.
+     * 拿到连接.传递连接.处理连接.处理的关键地方.
+     * 1.inputBuffer and  outputBuffer绑定在了NioSocketWrapper.
+     * 2. Http11Processor持有NioSocketWrapper对象.
+     * 3. NioSocketWrapper去读写数据填充到对应的两个Buffer内.
+     * @param protocol
+     * @param endpoint
+     */
     @SuppressWarnings("deprecation")
     public Http11Processor(AbstractHttp11Protocol<?> protocol, AbstractEndpoint<?> endpoint) {
         super(endpoint);
@@ -186,11 +203,15 @@ public class Http11Processor extends AbstractProcessor {
 
         httpParser = new HttpParser(protocol.getRelaxedPathChars(),
                 protocol.getRelaxedQueryChars());
-
+        /**
+         * Http11 InputBuffer  绑定到 {@link org.apache.coyote.Request}
+         */
         inputBuffer = new Http11InputBuffer(request, protocol.getMaxHttpHeaderSize(),
                 protocol.getRejectIllegalHeaderName(), httpParser);
         request.setInputBuffer(inputBuffer);
-
+        /**
+         * Http11 OutputBuffer  绑定到{@link org.apache.coyote.Response}
+         */
         outputBuffer = new Http11OutputBuffer(response, protocol.getMaxHttpHeaderSize(),
                 protocol.getSendReasonPhrase());
         response.setOutputBuffer(outputBuffer);
@@ -477,7 +498,17 @@ public class Http11Processor extends AbstractProcessor {
         }
     }
 
-
+    /**
+     * 处理请求的方法.
+     * 1.解析请求头.
+     * 2.在适配器中进行处理.(重点哦. Connector和Container衔接的地方.
+     * {@link CoyoteAdapter#service(org.apache.coyote.Request, org.apache.coyote.Response)})
+     * 3.完成请求的处理.
+     * @param socketWrapper The connection to process
+     *
+     * @return
+     * @throws IOException
+     */
     @Override
     public SocketState service(SocketWrapperBase<?> socketWrapper)
         throws IOException {
@@ -606,6 +637,10 @@ public class Http11Processor extends AbstractProcessor {
             if (getErrorState().isIoAllowed()) {
                 try {
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
+/**
+ * 直接踏马交给适配器去处理了.
+ * {@link CoyoteAdapter#service(org.apache.coyote.Request, org.apache.coyote.Response)}
+ */
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
