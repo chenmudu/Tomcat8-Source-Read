@@ -35,6 +35,7 @@ import javax.management.ObjectName;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.WebConnection;
 
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.juli.logging.Log;
 import org.apache.tomcat.InstanceManager;
 import org.apache.tomcat.util.ExceptionUtils;
@@ -49,6 +50,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  * 多个协议的抽象类。封装聚合集中功能。
+ * 重点关注Http11NioProtocol.
  * @param <S>
  */
 public abstract class AbstractProtocol<S> implements ProtocolHandler,
@@ -477,6 +479,8 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
      * Create and configure a new Processor instance for the current protocol
      * implementation.
      *
+     * 子类去创建对应的处理器.
+     * {@link AbstractHttp11Protocol#createProcessor()}
      * @return A fully configured Processor instance that is ready to use
      */
     protected abstract Processor createProcessor();
@@ -731,7 +735,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             }
 
             S socket = wrapper.getSocket();
-
+            //关键点(Http11Processor).
             Processor processor = connections.get(socket);
             if (getLog().isDebugEnabled()) {
                 getLog().debug(sm.getString("abstractConnectionHandler.connectionsGet",
@@ -807,6 +811,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                                 processor));
                     }
                 }
+                /**
+                 * 关键点. 拿到Http11Processor处理器.
+                 * 并注册.
+                 */
                 if (processor == null) {
                     processor = getProtocol().createProcessor();
                     register(processor);
@@ -820,6 +828,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
                 SocketState state = SocketState.CLOSED;
                 do {
+                    /**
+                     *
+                     * {@link AbstractProcessorLight#process(org.apache.tomcat.util.net.SocketWrapperBase, org.apache.tomcat.util.net.SocketEvent)}
+                     */
                     state = processor.process(wrapper, status);
 
                     if (state == SocketState.UPGRADING) {
@@ -1036,7 +1048,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             release(processor);
         }
 
-
+        //注册功能.
         protected void register(Processor processor) {
             if (getProtocol().getDomain() != null) {
                 synchronized (this) {

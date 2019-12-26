@@ -63,7 +63,8 @@ public abstract class AbstractEndpoint<S> {
     protected static final StringManager sm = StringManager.getManager(AbstractEndpoint.class);
 
     /**
-     * 处理接收到的Socket，并调用对应的Processor去进行处理。
+     * 处理接收到的Socket，
+     * 并调用对应的Processor去进行处理。
      * @param <S>
      */
     public static interface Handler<S> {
@@ -202,7 +203,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * counter for nr of connections handled by an endpoint
-     * 处理连接的计数器。
+     * 控制和处理连接的计数器。避免超过最大处理能力.
      */
     private volatile LimitLatch connectionLimitLatch = null;
 
@@ -512,6 +513,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * External Executor based thread pool.
+     * I/O密集型线程池.
      */
     private Executor executor = null;
     public void setExecutor(Executor executor) {
@@ -797,6 +799,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Handling of accepted sockets.
+     * 处理接收到的Socket.
      */
     private Handler<S> handler = null;
     public void setHandler(Handler<S> handler ) { this.handler = handler; }
@@ -1094,7 +1097,7 @@ public abstract class AbstractEndpoint<S> {
      * Process the given SocketWrapper with the given status. Used to trigger
      * processing as if the Poller (for those endpoints that have one)
      * selected the socket.
-     *
+     * 用以有(给定的)status去处理已有的(给定的)SocketWrapper.
      * @param socketWrapper The socket wrapper to process
      * @param event         The socket event to be processed
      * @param dispatch      Should the processing be performed on a new
@@ -1110,10 +1113,14 @@ public abstract class AbstractEndpoint<S> {
             }
             SocketProcessorBase<S> sc = processorCache.pop();
             if (sc == null) {
+                /**
+                 *{@link NioEndpoint#createSocketProcessor(org.apache.tomcat.util.net.SocketWrapperBase, org.apache.tomcat.util.net.SocketEvent)}
+                 */
                 sc = createSocketProcessor(socketWrapper, event);
             } else {
                 sc.reset(socketWrapper, event);
             }
+            //获取线程池.
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
                 executor.execute(sc);
@@ -1247,6 +1254,9 @@ public abstract class AbstractEndpoint<S> {
             Thread t = new Thread(acceptors[i], threadName);
             t.setPriority(getAcceptorThreadPriority());
             t.setDaemon(getDaemon());
+            /**
+             * {@link NioEndpoint.Acceptor#run()}
+             */
             t.start();
         }
     }
