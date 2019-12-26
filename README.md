@@ -5,7 +5,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/chenmudu/Tomcat8-Source-Read?label=%F0%9F%98%95%28issue%29&style=social)](https://github.com/chenmudu/Tomcat8-Source-Read/issues)
 [![Github downloads](https://img.shields.io/github/downloads/chenmudu/Tomcat8-Source-Read/total?style=social)](https://codeload.github.com/chenmudu/Tomcat8-Source-Read/zip/master)
 
-> Tomcat8-Source-Read(源码解读)
+> 💪 Tomcat8-Source-Read(源码解读)
 
 当你遇到以下类似问题时，`Tomcat8-Source-Read`可以帮你：
 
@@ -16,31 +16,62 @@
 
 `Tomcat8-Source-Read`基于Maven + IDEA，通过配置少量启动参数去构建。内置主要功能源码的中英翻译，持续更新个人的读源码感想。以及持续更新类结构图和关键逻辑的流程图。
 
-## 快速开始
+> ☞目录说明
+```
+├─apache-tomcat-8.5.49-src tomcat源码(内部包含源码流程注释及中英文翻译)模块
+│  
+├─catalina-home   catallina配置(整个项目调试及tomcat优化的配置模块)
+│  
+├─common-api    公共Api模块(预计会为Tomcat做额外功能添加)
+│       ├─src
+│ 	        ├─main
+│  		      ├─java
+│ 		          └─org.chenchen.test
+│  	      
+└─common-doc    公共文档模块,目前包括:
+                                1.Servlet 3.1规范文档(中文)
+                 预计后期增加:1.源码导读文档和时序图.
+                             2.源码导读流程图.
+                             3.感兴趣的一些源码极致分析.
+                             4.源码精髓分析.
+                    
+```
 
-0.下载源码包
+> ☞ 预计目标 & 目前进度
+
+- [x] 🍉 Tomcat源码构建
+- [x] 🍎 源码导读及注释
+- [ ] 🍓 源码导读流程图(准备中...)
+- [ ] 🍍 源码导读文档(准备中...)
+- [ ] 🍌 源码精髓分析(准备中...)
+- [ ] 🥑 为容器增加扩展功能(准备中...)
+- [ ] 🌤 ...待增加
+
+## ☞ 快速开始
+
+0.下载源码包 🍉
 
 ```sh
 git clone -b branch-chenchen  git@github.com:chenmudu/Tomcat8-Source-Read.git
 ```
-1.选择构建工具和调试工具
+1.选择构建工具和调试工具 🍓
 
 ```sh
 Maven + IDEA
 ```
 
-2 点击Edit Configurations,选择Application构建项目。
+2 点击Edit Configurations,选择Application构建项目 🍍
 
 ```sh
 Maven + IDEA
 ```
-3 修改Main class参数值为(启动入口)：
+3 修改Main class参数值为(启动入口) 🍌
 
 ```sh
 org.apache.catalina.startup.Bootstrap
 ```
 
-4 修改Vm options参数值为(调试和源码分开)：
+4 修改Vm options参数值为(调试和源码分开) 🍎
 
 ```sh
 -Dcatalina.home=catalina-home 
@@ -51,20 +82,20 @@ org.apache.catalina.startup.Bootstrap
 -Djava.util.logging.config.file=catalina-home/conf/logging.properties
 ```
 
-5 Run Application：
+5 Run Application 🥑
 
 ```sh
 Web Browser keys：localhost:8080
 ```
-6 选择感兴趣的模块调试读源码即可。如果出现乱码，请点击
+6 选择感兴趣的模块调试读源码即可。如果出现乱码，请点击 🍅
 ```sh
 catalina-home/conf/logging.properties 文件内修改对应参数.
 ```
 
-## 维护者
+## ☞ 维护者 ❤
 
 [@陈晨(chenchen6)](https://github.com/chenmudu).
 
-## 如何贡献(中英翻译,源码解读感想)
+## ☞ 如何贡献(中英翻译,源码解读感想)  💪 
 
 非常欢迎你的加入! [提一个Issue](https://github.com/chenmudu/Tomcat8-Source-Read/issues/new) 或者提交一个 Pull Request.
