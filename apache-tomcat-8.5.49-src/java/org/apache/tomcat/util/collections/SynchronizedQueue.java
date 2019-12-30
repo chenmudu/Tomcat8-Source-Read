@@ -22,6 +22,7 @@ package org.apache.tomcat.util.collections;
  * create an unbounded queue with no requirement to shrink the queue. The aim is
  * to provide the bare minimum of required functionality as quickly as possible
  * with minimum garbage.
+ * 减少垃圾回收并且不需要减少队列长度的用于替换JDK的ConcurrentLinkedQueue的队列。
  *
  * @param <T> The type of object managed by this queue
  */

@@ -173,6 +173,7 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
     /**
      * Maximum size of the post which will be saved when processing certain
      * requests, such as a POST.
+     * 处理某些请求(如某个post)时将保存的post的最大大小。
      */
     private int maxSavePostSize = 4 * 1024;
     public int getMaxSavePostSize() { return maxSavePostSize; }
@@ -201,6 +202,8 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
     /**
      * If true, the connectionUploadTimeout will be ignored and the regular
      * socket timeout will be used for the full duration of the connection.
+     *
+     * 如果为真，则忽略connectionUploadTimeout，并在整个连接期间使用常规的套接字超时。
      */
     private boolean disableUploadTimeout = true;
     public boolean getDisableUploadTimeout() { return disableUploadTimeout; }
@@ -900,12 +903,20 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
      */
     @Override
     protected Processor createProcessor() {
+        //1.创建Http11处理器。
         Http11Processor processor = new Http11Processor(this, getEndpoint());
+        //2.设置各种属性。
+        //2.1 设置适配器。
         processor.setAdapter(getAdapter());
+        //2.1 KeepAlive情况下 每个Socket处理的最多个请求次数(默认100)。
         processor.setMaxKeepAliveRequests(getMaxKeepAliveRequests());
+        //2.2 设置KeepAlive的超时时间为300000ms。 == 300S.
         processor.setConnectionUploadTimeout(getConnectionUploadTimeout());
+        //2.3 设置上传requestBody单独的超时时间。
         processor.setDisableUploadTimeout(getDisableUploadTimeout());
+        //2.4 忽略。
         processor.setRestrictedUserAgents(getRestrictedUserAgents());
+        //2.5 设置SSL相关缓冲区保存的Post的大小。
         processor.setMaxSavePostSize(getMaxSavePostSize());
         return processor;
     }

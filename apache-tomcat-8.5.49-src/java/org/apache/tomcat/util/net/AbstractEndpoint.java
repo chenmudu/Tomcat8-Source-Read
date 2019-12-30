@@ -731,7 +731,7 @@ public abstract class AbstractEndpoint<S> {
     /**
      * Max keep alive requests
      */
-    private int maxKeepAliveRequests=100; // as in Apache HTTPD server
+    private int maxKeepAliveRequests=100; // as in Apache HTTP server
     public int getMaxKeepAliveRequests() {
         return maxKeepAliveRequests;
     }
@@ -1114,6 +1114,7 @@ public abstract class AbstractEndpoint<S> {
             SocketProcessorBase<S> sc = processorCache.pop();
             if (sc == null) {
                 /**
+                 * 创建SocketProcessor.
                  *{@link NioEndpoint#createSocketProcessor(org.apache.tomcat.util.net.SocketWrapperBase, org.apache.tomcat.util.net.SocketEvent)}
                  */
                 sc = createSocketProcessor(socketWrapper, event);
@@ -1123,6 +1124,9 @@ public abstract class AbstractEndpoint<S> {
             //获取线程池.
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
+                /**
+                 * 线程池执行的是什么任务？
+                 */
                 executor.execute(sc);
             } else {
                 sc.run();

@@ -33,7 +33,7 @@ import org.apache.catalina.startup.ClassLoaderFactory.Repository;
 import org.apache.catalina.startup.ClassLoaderFactory.RepositoryType;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.chenchen.test.StartLogTest;
+import org.chenchen.test.LogConstantForCode;
 
 /**
  * Bootstrap loader for Catalina.  This application constructs a class loader
@@ -536,7 +536,7 @@ public final class Bootstrap {
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
-        log.info("current your machine time is : " + StartLogTest.CURRENT_LOCAL_DATE);
+        log.info("current your machine time is : " + LogConstantForCode.CURRENT_LOCAL_DATE);
         //断点可以在这儿打一个。
         synchronized (daemonLock) {
             if (daemon == null) { //tomcat没用启动。
