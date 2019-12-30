@@ -136,6 +136,10 @@ final class StandardHostValve extends ValveBase {
             // application for processing.
             try {
                 if (!response.isErrorReportRequired()) {
+                    /**
+                     *  委托对应的Context去处理请求。
+                     * {@link StandardContextValve#invoke(org.apache.catalina.connector.Request, org.apache.catalina.connector.Response)}
+                     */
                     context.getPipeline().getFirst().invoke(request, response);
                 }
             } catch (Throwable t) {

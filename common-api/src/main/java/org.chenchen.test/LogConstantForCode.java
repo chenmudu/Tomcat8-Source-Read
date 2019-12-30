@@ -21,8 +21,15 @@ import java.time.format.DateTimeFormatter;
  * @Date: 2019/12/23 23:56
  * @Description:
  */
-public interface StartLogTest {
+public interface LogConstantForCode {
+    /**
+     * 当前时间
+     */
     String CURRENT_LOCAL_DATE = DateTimeFormatter
                                         .ofPattern("yyyy-MM-dd HH:mm:ss")
                                         .format(LocalDateTime.now());
+    
+    String LOG_START_FOR_FUNCTION = "start!";
+
+    String LOG_END_FOR_FUNCTION = "end!";
 }

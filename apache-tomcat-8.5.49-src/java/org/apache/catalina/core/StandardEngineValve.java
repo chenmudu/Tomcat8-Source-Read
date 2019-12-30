@@ -60,6 +60,8 @@ final class StandardEngineValve extends ValveBase {
      * based on the requested server name.  If no matching Host can
      * be found, return an appropriate HTTP error.
      *
+     * 选择合适的Host去执行此次请求。
+     *
      * @param request Request to be processed
      * @param response Response to be produced
      *
@@ -71,6 +73,7 @@ final class StandardEngineValve extends ValveBase {
         throws IOException, ServletException {
 
         // Select the Host to be used for this Request
+        //StandardHost.
         Host host = request.getHost();
         if (host == null) {
             response.sendError
@@ -84,6 +87,10 @@ final class StandardEngineValve extends ValveBase {
         }
 
         // Ask this Host to process this request
+        /**
+         *  委托对应的Host处理请求。
+         * {@link StandardHostValve#invoke(org.apache.catalina.connector.Request, org.apache.catalina.connector.Response)}
+         */
         host.getPipeline().getFirst().invoke(request, response);
 
     }

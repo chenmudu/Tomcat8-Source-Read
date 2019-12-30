@@ -973,7 +973,7 @@ public class Connector extends LifecycleMBeanBase  {
 
         super.initInternal();
 
-        // Initialize adapter
+        // 初始化的时候设置我们的适配器。
         adapter = new CoyoteAdapter(this);
         protocolHandler.setAdapter(adapter);
 

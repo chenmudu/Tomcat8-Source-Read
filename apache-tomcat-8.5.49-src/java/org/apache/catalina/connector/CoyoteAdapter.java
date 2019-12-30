@@ -116,6 +116,7 @@ public class CoyoteAdapter implements Adapter {
 
     /**
      * The CoyoteConnector with which this processor is associated.
+     * 与此适配器相关联的连接器。
      */
     private final Connector connector;
 
@@ -299,6 +300,17 @@ public class CoyoteAdapter implements Adapter {
     }
 
 
+    /**
+     * 1. 解析并对Request和Response相互绑定。
+     * 2. 绑定解析对应的Mapper(为请求绑定对应的Engine -> Host ->Context ->Wrapper.)。
+     * 3. 调用{@link org.apache.catalina.core.StandardEngineValve#invoke}
+     * 4.
+     *
+     * @param req The request object
+     * @param res The response object
+     *
+     * @throws Exception
+     */
     @Override
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
@@ -308,12 +320,20 @@ public class CoyoteAdapter implements Adapter {
 
         if (request == null) {
             // Create objects
+            /**
+             * 通过关联的Connector创建了对应的Request和Response对象。
+             */
             request = connector.createRequest();
             request.setCoyoteRequest(req);
             response = connector.createResponse();
             response.setCoyoteResponse(res);
 
             // Link objects
+            /**
+             * 关联对应的Request和Response对象。
+             * 作用：符合Servlet规范里的请求-响应模式。
+             * 将请求和响应关系一对一确定。
+             */
             request.setResponse(response);
             response.setRequest(request);
 
@@ -322,6 +342,9 @@ public class CoyoteAdapter implements Adapter {
             res.setNote(ADAPTER_NOTES, response);
 
             // Set query string encoding
+            /**
+             * URI的编码设置。默认为UTF-8. URI和URL区别请自信查找对应规范。
+             */
             req.getParameters().setQueryStringCharset(connector.getURICharset());
         }
 
@@ -337,12 +360,25 @@ public class CoyoteAdapter implements Adapter {
         try {
             // Parse and set Catalina and configuration specific
             // request parameters
+            /**
+             * Mapper解析对应的Web请求。
+             */
             postParseSuccess = postParseRequest(req, request, res, response);
+            //解析成功
             if (postParseSuccess) {
                 //check valves if we support async
+                /**
+                 * 对Request设置异步支持。
+                 */
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
+                /**
+                 * 调用Container的PipeLine。
+                 * 从Adapter中通过Service去过去对应的Engine。
+                 * fist -> xxx -> xxx ->xxx ->value ->basicValue.
+                 * 获取到
+                 */
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }
@@ -553,6 +589,9 @@ public class CoyoteAdapter implements Adapter {
      * Perform the necessary processing after the HTTP headers have been parsed
      * to enable the request/response pair to be passed to the start of the
      * container pipeline for processing.
+     *
+     * 在解析HTTP请求头之后执行必要的处理，以便将请求/响应传递到容器管道的开始处进行处理。
+     * 同时将Adpter的内容从Mapper中找到。
      *
      * @param req      The coyote request object
      * @param request  The catalina request object

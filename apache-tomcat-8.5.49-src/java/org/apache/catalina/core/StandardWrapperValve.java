@@ -65,6 +65,9 @@ final class StandardWrapperValve
     private volatile long processingTime;
     private volatile long maxTime;
     private volatile long minTime = Long.MAX_VALUE;
+    /**
+     * 记录请求的次数。
+     */
     private final AtomicInteger requestCount = new AtomicInteger(0);
     private final AtomicInteger errorCount = new AtomicInteger(0);
 
@@ -82,6 +85,11 @@ final class StandardWrapperValve
     /**
      * Invoke the servlet we are managing, respecting the rules regarding
      * servlet lifecycle and SingleThreadModel support.
+     *
+     *   调用我们的Servlet去处理请求。
+     *   1.延迟加载并拿到对应的Servlet。
+     *   2.创建默认的过滤器链并将其执行(Request, Response, Servlet)。
+     *   3.
      *
      * @param request Request to be processed
      * @param response Response to be produced
@@ -111,6 +119,10 @@ final class StandardWrapperValve
         }
 
         // Check for the servlet being marked unavailable
+        /**
+         * tomcat加载Servlet默认是在第一次请求的时候才会去加载。
+         * Servlet的延迟加载。
+         */
         if (!unavailable && wrapper.isUnavailable()) {
             container.getLogger().info(sm.getString("standardWrapper.isUnavailable",
                     wrapper.getName()));
@@ -129,6 +141,9 @@ final class StandardWrapperValve
         }
 
         // Allocate a servlet instance to process this request
+        /**
+         * 分配一个Servlet实例去处理这个请求。
+         */
         try {
             if (!unavailable) {
                 servlet = wrapper.allocate();
@@ -161,14 +176,18 @@ final class StandardWrapperValve
             exception(request, response, e);
             servlet = null;
         }
-
+        //获取请求的路径。
         MessageBytes requestPathMB = request.getRequestPathMB();
+        //分发的类型。
         DispatcherType dispatcherType = DispatcherType.REQUEST;
         if (request.getDispatcherType()==DispatcherType.ASYNC) dispatcherType = DispatcherType.ASYNC;
         request.setAttribute(Globals.DISPATCHER_TYPE_ATTR,dispatcherType);
         request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                 requestPathMB);
         // Create the filter chain for this request
+        /**
+         * 创建过滤器链。
+         */
         ApplicationFilterChain filterChain =
                 ApplicationFilterFactory.createFilterChain(request, wrapper, servlet);
 
@@ -255,11 +274,17 @@ final class StandardWrapperValve
             exception(request, response, e);
         } finally {
             // Release the filter chain (if any) for this request
+            /**
+             * 释放过滤器链。
+             */
             if (filterChain != null) {
                 filterChain.release();
             }
 
             // Deallocate the allocated servlet instance
+            /**
+             * 回收Servlet到实例池内。
+             */
             try {
                 if (servlet != null) {
                     wrapper.deallocate(servlet);

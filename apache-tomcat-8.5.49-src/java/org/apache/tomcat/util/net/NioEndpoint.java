@@ -45,6 +45,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
 
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.Http11Processor;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.ExceptionUtils;
@@ -90,7 +91,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     private static final Log log = LogFactory.getLog(NioEndpoint.class);
 
     /**
-     * 16经质的Ox100  2^8 = 256.
+     * 16进制的Ox100  2^8 = 256.
      */
     public static final int OP_REGISTER = 0x100; //register interest op
 
@@ -492,6 +493,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             }
             /**
              * 多么重要的地方啊。
+             * 将NioChannel注册到Poller内。
              */
             getPoller0().register(channel);
         } catch (Throwable t) {
@@ -687,8 +689,17 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      */
     public static class PollerEvent implements Runnable {
 
+        /**
+         *
+         */
         private NioChannel socket;
+        /**
+         *
+         */
         private int interestOps;
+        /**
+         *
+         */
         private NioSocketWrapper socketWrapper;
 
         public PollerEvent(NioChannel ch, NioSocketWrapper w, int intOps) {
@@ -819,15 +830,18 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
          * be added to a temporary array, and polled first after a maximum amount
          * of time equal to pollTime (in most cases, latency will be much lower,
          * however).
-         *
+         * 向Poller中添加指定的socket和
          * @param socket to add to the poller
          * @param interestOps Operations for which to register this socket with
          *                    the Poller
          */
         public void add(final NioChannel socket, final int interestOps) {
             PollerEvent r = eventCache.pop();
-            if ( r==null) r = new PollerEvent(socket,null,interestOps);
-            else r.reset(socket,null,interestOps);
+            if ( r==null) {
+                r = new PollerEvent(socket,null,interestOps);
+            }else {
+                r.reset(socket,null,interestOps);
+            }
             addEvent(r);
             if (close) {
                 NioEndpoint.NioSocketWrapper ka = (NioEndpoint.NioSocketWrapper)socket.getAttachment();
@@ -1629,6 +1643,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      * external Executor thread pool.
      *
      * Processor 用于将 Endpoint 接收到的 Socket 封装成 Request。
+     * Tomcat自定义的I/O密集线程池就是用于在这里工作。这里的doRun就是任务类型。
      * 线程池调用的任务处理者.(重点):
      * 1.拿到NioEndpoint的ConnectionHandler.
      * 2.ConnectionHandler使用Http11Processor去处理NioSocketWrapper.
@@ -1639,12 +1654,19 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             super(socketWrapper, event);
         }
 
+        /**
+         *  所以我们能看到,线程池中线程大部分都在等待I/O操作。
+         *  故此线程池应该被优化。Tomcat就在JDK基础上进行了优化。
+         * 1.握手，建立对应链接。
+         * 2.调用对应的连接器去处理此类请求。{@link Http11Processor#service(org.apache.tomcat.util.net.SocketWrapperBase)}
+         */
         @Override
         protected void doRun() {
             NioChannel socket = socketWrapper.getSocket();
             SelectionKey key = socket.getIOChannel().keyFor(socket.getPoller().getSelector());
 
             try {
+                //握手？
                 int handshake = -1;
 
                 try {
@@ -1676,6 +1698,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 } catch (CancelledKeyException ckx) {
                     handshake = -1;
                 }
+
+                /**
+                 * 握手成功?
+                 */
                 if (handshake == 0) {
                     SocketState state = SocketState.OPEN;
                     // Process the request from this socket

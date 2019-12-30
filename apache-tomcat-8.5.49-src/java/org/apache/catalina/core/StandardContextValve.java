@@ -93,6 +93,10 @@ final class StandardContextValve extends ValveBase {
         if (request.isAsyncSupported()) {
             request.setAsyncSupported(wrapper.getPipeline().isAsyncSupported());
         }
+        /**
+         * 委托对应的Wrapper去处理请求。
+         * {@link StandardWrapperValve#invoke(org.apache.catalina.connector.Request, org.apache.catalina.connector.Response)}
+         */
         wrapper.getPipeline().getFirst().invoke(request, response);
     }
 }
