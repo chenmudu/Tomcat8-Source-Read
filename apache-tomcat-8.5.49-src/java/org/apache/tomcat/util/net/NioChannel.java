@@ -30,7 +30,11 @@ import org.apache.tomcat.util.res.StringManager;
  * Base class for a SocketChannel wrapper used by the endpoint.
  * This way, logic for an SSL socket channel remains the same as for
  * a non SSL, making sure we don't need to code for any exception cases.
+ * 和缓冲区进行数据交互的类。实现与ByteChannel类。
+ * 此类依赖于SocketWrapperBase和SocketBufferHandler类。
  *
+ *
+ * 设计目的: 提供统一的 Nio 缓冲区处理逻辑，为各个组件的数据流转提供上下文环境。
  * @version 1.0
  */
 public class NioChannel implements ByteChannel {
@@ -53,7 +57,7 @@ public class NioChannel implements ByteChannel {
 
     /**
      * Reset the channel
-     *
+     * 重置Channel.
      * @throws IOException If a problem was encountered resetting the channel
      */
     public void reset() throws IOException {

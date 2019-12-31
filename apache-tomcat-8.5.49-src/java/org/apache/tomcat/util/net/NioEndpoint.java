@@ -285,9 +285,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      * Start the NIO endpoint, creating acceptor, poller threads.
      *
      * 1.直接启动NioEndPoint。
-     * 2.实例化对应数据结构.
-     * 3.创建I/O密集型的线程池.
-     * 4.创建Acceptor 和 Poller的线程组。
+     * 2.实例化对应数据结构.(Processor, PollerEvent, NioChannel)
+     * 3.对连接数做限制。
+     * 4.创建I/O密集型的线程池.
+     * 5.创建Acceptor 和 Poller的线程组。
      *
      *
      * Connector的Accptor,Poller,PollerEvent都是继承Runnable.
@@ -478,10 +479,16 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
             NioChannel channel = nioChannels.pop();
             if (channel == null) {
+                /**
+                 * 初始化SocketBufferHandler。
+                 */
                 SocketBufferHandler bufhandler = new SocketBufferHandler(
                         socketProperties.getAppReadBufSize(),
                         socketProperties.getAppWriteBufSize(),
                         socketProperties.getDirectBuffer());
+                /**
+                 * 创建Channel对象。
+                 */
                 if (isSSLEnabled()) {
                     channel = new SecureNioChannel(socket, bufhandler, selectorPool, this);
                 } else {
@@ -492,7 +499,6 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 channel.reset();
             }
             /**
-             * 多么重要的地方啊。
              * 将NioChannel注册到Poller内。
              */
             getPoller0().register(channel);

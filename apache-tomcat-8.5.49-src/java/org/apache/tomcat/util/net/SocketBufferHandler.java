@@ -20,12 +20,37 @@ import java.nio.ByteBuffer;
 
 import org.apache.tomcat.util.buf.ByteBufferUtils;
 
+/**
+ * SocketBuffer的处理器。用于Socket读写的缓冲。
+ */
 public class SocketBufferHandler {
 
     private volatile boolean readBufferConfiguredForWrite = true;
+    /**
+     * 读取数据的Buffer。
+     * 关于ByteBuffer: 在Nio中，三大组件。Buffer,Channel,Selector..
+     * 1. Channel:
+     * A System and B Syatem进行交互。A，B之间建立的信道叫做Channel.
+     * 且Channel的个数同客户端个数一致。其作为客户端和服务器之间的连接。
+     *
+     * 2.Buffer:
+     * 缓冲区,作为客户端本身和客户端的Channel中数据交换的地方。定义了读写的的API。
+     *
+     * 数据总是从Channel读取到Buffer中，或者从Buffer中写入到Channel中。
+     *
+     * 3.Selectors：监听多个Channel的事件，包括但不仅限于：打开链接,数据到达。
+     * 所以启用一个线程就可以监听多个数据通道。
+     */
+
+    /**
+     * 用于读的Buffer。
+     */
     private volatile ByteBuffer readBuffer;
 
     private volatile boolean writeBufferConfiguredForWrite = true;
+    /**
+     * 用于写操作的Buffer。
+     */
     private volatile ByteBuffer writeBuffer;
 
     private final boolean direct;
