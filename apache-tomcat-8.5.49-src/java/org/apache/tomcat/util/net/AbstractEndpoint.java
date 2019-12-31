@@ -217,6 +217,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Threads used to accept new connections and pass them to worker threads.
+     * 这个线程的作用：接收新的连接然后传递给工作线程。也就是tomcat自定义的线程池中的线程。
      */
     protected Acceptor[] acceptors;
 
@@ -460,6 +461,8 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Priority of the acceptor threads.
+     * 接收器线程的级别为默认级别5。
+     * 关于windows以及Linux下，Java的线程级别的对应请参考文档。
      */
     protected int acceptorThreadPriority = Thread.NORM_PRIORITY;
     public void setAcceptorThreadPriority(int acceptorThreadPriority) {
@@ -1244,13 +1247,13 @@ public abstract class AbstractEndpoint<S> {
         startInternal();
     }
 
+    /**
+     * 1.创建连接器Runnable任务。
+     * 2.启动子类NioEndpoint.Acceptor#run的任务。
+     */
     protected final void startAcceptorThreads() {
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];
-        /**
-         * 1.创建接收器。
-         * 2.并启动对应线程。
-         */
         for (int i = 0; i < count; i++) {
             acceptors[i] = createAcceptor();
             String threadName = getName() + "-Acceptor-" + i;
