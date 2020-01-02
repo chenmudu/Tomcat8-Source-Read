@@ -41,6 +41,14 @@
                              4.源码精髓分析.
                     
 ```
+> ☞更新列表
+
+| 更新编号   | 日期       | 更新内容 | 更新人   | 标识     |
+| :----:     | :----:     | :----:   | :----:   | :-----   |
+|    ...     |  ...       | ...      |  陈晨    |  ...  |
+|0000 0000 1011| 2020.01.01 | [定制I/O密集线程池](https://github.com/chenmudu/Tomcat8-Source-Read/tree/master/common-api/src/main/java/org/chenchen/customer )   | 陈晨   |  FangZhiCheng-Station  |
+|0000 0000 1100| 2020.01.02 | [线程池对比文档](https://github.com/chenmudu/Tomcat8-Source-Read/tree/master/common-doc/doc/2-custom-executor.md )   | 陈晨   |  BanPo-Station  | 
+|    ...     |  ...       | ...      |  陈晨    |  ...  |
 
 > ☞ 预计目标 & 目前进度
 
