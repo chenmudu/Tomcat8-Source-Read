@@ -675,6 +675,9 @@ public abstract class SocketWrapperBase<E> {
         boolean result = false;
         if (block) {
             // A blocking flush will always empty the buffer.
+            /**
+             * {@link SocketWrapperBase#flushBlocking()}
+             */
             flushBlocking();
         } else {
             result = flushNonBlocking();
@@ -685,6 +688,9 @@ public abstract class SocketWrapperBase<E> {
 
 
     protected void flushBlocking() throws IOException {
+        /**
+         * {@link SocketWrapperBase#doWrite(boolean)}
+         */
         doWrite(true);
 
         if (!nonBlockingWriteBuffer.isEmpty()) {
@@ -732,6 +738,9 @@ public abstract class SocketWrapperBase<E> {
      */
     protected void doWrite(boolean block) throws IOException {
         socketBufferHandler.configureWriteBufferForRead();
+        /**
+         * {@link NioEndpoint.NioSocketWrapper#doWrite(boolean, java.nio.ByteBuffer)}
+         */
         doWrite(block, socketBufferHandler.getWriteBuffer());
     }
 

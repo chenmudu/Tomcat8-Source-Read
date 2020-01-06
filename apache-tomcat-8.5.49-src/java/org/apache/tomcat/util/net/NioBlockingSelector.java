@@ -98,6 +98,9 @@ public class NioBlockingSelector {
         try {
             while ( (!timedout) && buf.hasRemaining()) {
                 if (keycount > 0) { //only write if we were registered for a write
+                    /**
+                     * 最终将数据写出去。通过Channel。
+                     */
                     int cnt = socket.write(buf); //write the data
                     if (cnt == -1)
                         throw new EOFException();

@@ -377,7 +377,7 @@ public class CoyoteAdapter implements Adapter {
                  * 调用Container的PipeLine。
                  * 从Adapter中通过Service去过去对应的Engine。
                  * fist -> xxx -> xxx ->xxx ->value ->basicValue.
-                 * 获取到
+                 * 调用{@link org.apache.catalina.core.StandardEngineValve#invoke}
                  */
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
@@ -410,6 +410,10 @@ public class CoyoteAdapter implements Adapter {
                 }
             } else {
                 request.finishRequest();
+                /**
+                 * 返回数据给页面。通过流的读写。
+                 * {@link OutputBuffer#close()}
+                 */
                 response.finishResponse();
             }
 

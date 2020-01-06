@@ -263,6 +263,9 @@ public class Http11OutputBuffer implements HttpOutputBuffer {
         if (lastActiveFilter == -1) {
             outputStreamOutputBuffer.end();
         } else {
+            /**
+             * {@link SocketOutputBuffer#end()}
+             */
             activeFilters[lastActiveFilter].end();
         }
 
@@ -638,6 +641,9 @@ public class Http11OutputBuffer implements HttpOutputBuffer {
 
         @Override
         public void end() throws IOException {
+            /**
+             * {@link SocketWrapperBase#flush(boolean)}
+             */
             socketWrapper.flush(true);
         }
 

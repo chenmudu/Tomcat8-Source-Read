@@ -1486,7 +1486,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             return nRead;
         }
 
-
+        /**
+         *
+         * @param block Should the write be blocking or not?
+         * @param from the ByteBuffer containing the data to be written
+         * 数据刷新到页面。
+         * @throws IOException
+         */
         @Override
         protected void doWrite(boolean block, ByteBuffer from) throws IOException {
             long writeTimeout = getWriteTimeout();
@@ -1497,6 +1503,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 // Ignore
             }
             try {
+                /**
+                 * 将数据返回给页面。
+                 * {@link NioSelectorPool#write(java.nio.ByteBuffer, org.apache.tomcat.util.net.NioChannel, java.nio.channels.Selector, long, boolean)}
+                 */
                 pool.write(from, getSocket(), selector, writeTimeout, block);
                 if (block) {
                     // Make sure we are flushed
