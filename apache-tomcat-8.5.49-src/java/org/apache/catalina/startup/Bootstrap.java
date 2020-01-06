@@ -48,6 +48,8 @@ import org.chenchen.test.LogConstantForCode;
  * 容器的常规操作。这种加载方式是为了将Catalina内部类(以及它们所依赖的任何其他类，如XML
  * 解析器)排除在系统类路径之外。所以对application级别的类是不可见的。
  *
+ * 启动器类。tomcat启动的入口类。请先关注static块儿的内容。
+ *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
@@ -83,14 +85,21 @@ public final class Bootstrap {
      *
      */
     static {
+        log.info("Bootstrap static {} start!");
         // Will always be non-null
+        /**
+         * C:\Users\chenc\Downloads\MySelf\Tomcat8-Source-Read ($CATALINA_HOME\bin：用户目录的绝对路径。)
+         */
         String userDir = System.getProperty("user.dir");
 
         // Home first
+        /**
+         * catalina-home (Tomcat的根目录：当前项目的相对路径)
+         */
         String home = System.getProperty(Globals.CATALINA_HOME_PROP);
         File homeFile = null;
 
-        //获取的是tomcat的安装目录.
+        //获取的是tomcat的安装目录.即：磁盘下catalina-home下绝对路径下的所有的文件夹和文件封装成File。
         if (home != null) {
             File f = new File(home);
             try {
@@ -146,6 +155,7 @@ public final class Bootstrap {
         }
         System.setProperty(
                 Globals.CATALINA_BASE_PROP, catalinaBaseFile.getPath());
+        log.info("Bootstrap static {} end!");
     }
 
     // -------------------------------------------------------------- Variables

@@ -1386,6 +1386,9 @@ public class Http11Processor extends AbstractProcessor {
 
     @Override
     protected final void finishResponse() throws IOException {
+        /**
+         * {@link Http11OutputBuffer#end()}
+         */
         outputBuffer.end();
     }
 

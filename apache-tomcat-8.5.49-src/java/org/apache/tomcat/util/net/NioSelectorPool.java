@@ -160,6 +160,9 @@ public class NioSelectorPool {
      * @throws EOFException if write returns -1
      * @throws SocketTimeoutException if the write times out
      * @throws IOException if an IO Exception occurs in the underlying socket logic
+     *
+     * 将数据返回给页面。
+     *
      */
     public int write(ByteBuffer buf, NioChannel socket, Selector selector,
                      long writeTimeout, boolean block) throws IOException {

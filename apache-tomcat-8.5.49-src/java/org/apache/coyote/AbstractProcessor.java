@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.RequestDispatcher;
 
+import org.apache.coyote.http11.Http11Processor;
 import org.apache.tomcat.util.ExceptionUtils;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
@@ -393,6 +394,9 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
         case CLOSE: {
             action(ActionCode.COMMIT, null);
             try {
+                /**
+                 * {@link  Http11Processor#finishResponse()}
+                 */
                 finishResponse();
             } catch (CloseNowException cne) {
                 setErrorState(ErrorState.CLOSE_NOW, cne);

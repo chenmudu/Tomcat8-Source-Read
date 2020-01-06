@@ -269,6 +269,9 @@ public class OutputBuffer extends Writer {
         if (coyoteResponse.getStatus() == HttpServletResponse.SC_SWITCHING_PROTOCOLS) {
             doFlush(true);
         } else {
+            /**
+             *{@link Response#action(org.apache.coyote.ActionCode, java.lang.Object)}
+             */
             doFlush(false);
         }
         closed = true;
