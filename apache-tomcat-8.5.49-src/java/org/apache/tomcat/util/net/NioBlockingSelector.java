@@ -37,6 +37,9 @@ import org.apache.tomcat.util.collections.SynchronizedQueue;
 import org.apache.tomcat.util.collections.SynchronizedStack;
 import org.apache.tomcat.util.net.NioEndpoint.NioSocketWrapper;
 
+/**
+ *
+ */
 public class NioBlockingSelector {
 
     private static final Log log = LogFactory.getLog(NioBlockingSelector.class);
@@ -46,9 +49,16 @@ public class NioBlockingSelector {
     private final SynchronizedStack<KeyReference> keyReferenceStack =
             new SynchronizedStack<>();
 
+    /**
+     * 持有共享选择器。
+     */
     protected Selector sharedSelector;
 
+    /**
+     * 基于辅 Selector 进行 NIO 的逻辑。
+     */
     protected BlockPoller poller;
+
     public NioBlockingSelector() {
 
     }
@@ -213,9 +223,15 @@ public class NioBlockingSelector {
         return read;
     }
 
-
+    /**
+     *基于辅 Selector 进行 NIO 的逻辑。
+     */
     protected static class BlockPoller extends Thread {
         protected volatile boolean run = true;
+        /**
+         * 辅助的Selector。
+         * 减小线程间的切换，同时减轻主Selector的负担。
+         */
         protected Selector selector = null;
         protected final SynchronizedQueue<Runnable> events = new SynchronizedQueue<>();
         public void disable() { run = false; selector.wakeup();}
