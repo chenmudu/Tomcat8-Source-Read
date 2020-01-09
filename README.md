@@ -15,7 +15,14 @@
 0. 从Tomcat官网下载了对应的代码，但是不知道如何基于Maven和IDEA去构建自己的源码。
 
 `Tomcat8-Source-Read`基于Maven + IDEA，通过配置少量启动参数去构建。内置主要功能源码的中英翻译，持续更新个人的读源码感想。以及持续更新类结构图和关键逻辑的流程图。
+> ☞微型架构图
+![](./common-doc/image/3-tomcat-structure-small.png)
 
+---
+> ☞详细整体架构图
+![](./common-doc/image/3-tomcat-structure-diagram.png)
+
+---
 > ☞目录说明
 ```
 ├─apache-tomcat-8.5.49-src tomcat源码(内部包含源码流程注释及中英文翻译)模块

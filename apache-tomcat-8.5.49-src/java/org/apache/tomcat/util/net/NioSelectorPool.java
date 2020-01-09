@@ -47,10 +47,14 @@ public class NioSelectorPool {
     protected static final boolean SHARED =
         Boolean.parseBoolean(System.getProperty("org.apache.tomcat.util.net.NioSelectorShared", "true"));
 
+    /**
+     * 阻塞的Nio多路选择器。
+     * 作用：调用NioChannel，使用SocketChannel向网络写入数据。
+     */
     protected NioBlockingSelector blockingSelector;
 
     /**
-     * 共享轮询器。
+     * 注册I/O事件的关键对象。
      */
     protected volatile Selector SHARED_SELECTOR;
 
@@ -66,9 +70,17 @@ public class NioSelectorPool {
     protected boolean enabled = true;
     protected AtomicInteger active = new AtomicInteger(0);
     protected AtomicInteger spare = new AtomicInteger(0);
+    /**
+     * 基于线程安全的量表队列。用于放置多个Selector。复用。
+     */
     protected ConcurrentLinkedQueue<Selector> selectors =
             new ConcurrentLinkedQueue<>();
 
+    /**
+     * 拿到对应的Selector
+     * @return
+     * @throws IOException
+     */
     protected Selector getSharedSelector() throws IOException {
         if (SHARED && SHARED_SELECTOR == null) {
             synchronized ( NioSelectorPool.class ) {
@@ -135,11 +147,21 @@ public class NioSelectorPool {
         }
     }
 
+    /**
+     * 创建并打开多路选择器(主 + 辅   Selector启动。)
+     * @throws IOException
+     */
     public void open() throws IOException {
         enabled = true;
+        /**
+         * Selector.open(); 打开一个Selector(主Selector)
+         */
         getSharedSelector();
         if (SHARED) {
             blockingSelector = new NioBlockingSelector();
+            /**
+             * {@link NioBlockingSelector#open(java.nio.channels.Selector)}
+             */
             blockingSelector.open(getSharedSelector());
         }
 
@@ -167,6 +189,9 @@ public class NioSelectorPool {
     public int write(ByteBuffer buf, NioChannel socket, Selector selector,
                      long writeTimeout, boolean block) throws IOException {
         if ( SHARED && block ) {
+            /**
+             * 通过NioBlockingSelector利用NioChannel将数据写入网络中。
+             */
             return blockingSelector.write(buf,socket,writeTimeout);
         }
         SelectionKey key = null;

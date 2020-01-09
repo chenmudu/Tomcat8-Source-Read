@@ -1107,6 +1107,9 @@ public abstract class AbstractEndpoint<S> {
      *                          container thread
      *
      * @return if processing was triggered successfully
+     *
+     * 1.获取SocketProcessor对象。
+     * 2.SocketProcessor执行指定任务，处理对应网络事件。(委托)
      */
     public boolean processSocket(SocketWrapperBase<S> socketWrapper,
             SocketEvent event, boolean dispatch) {

@@ -36,6 +36,7 @@ import org.apache.tomcat.util.res.StringManager;
 /**
  * InputBuffer for HTTP that provides request header parsing as well as transfer
  * encoding.
+ *  用于和Http消息的读取和写入操作。
  */
 public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler {
 
@@ -711,7 +712,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
     /**
      * Attempts to read some data into the input buffer.
-     *
+     * 读取数据的重要方法！！！
      * @return <code>true</code> if more data was added to the input buffer
      *         otherwise <code>false</code>
      */
@@ -798,6 +799,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
             // Read new bytes if needed
             if (byteBuffer.position() >= byteBuffer.limit()) {
+                //解析http头的时候是不会阻塞的。
                 if (!fill(false)) { // parse header
                     return HeaderParseStatus.NEED_MORE_DATA;
                 }
@@ -1072,6 +1074,9 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             if (byteBuffer.position() >= byteBuffer.limit()) {
                 // The application is reading the HTTP request body which is
                 // always a blocking operation.
+                /**
+                 * 读取HttpBody的时候是会阻塞的。
+                 */
                 if (!fill(true))
                     return -1;
             }
