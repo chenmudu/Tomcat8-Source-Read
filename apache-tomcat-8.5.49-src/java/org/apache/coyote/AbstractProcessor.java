@@ -42,6 +42,11 @@ import org.apache.tomcat.util.res.StringManager;
 /**
  * Provides functionality and attributes common to all supported protocols
  * (currently HTTP and AJP) for processing a single request/response.
+ *
+ * 为支持当前协议的单个的request或response提供公共的功能和属性。
+ *
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public abstract class AbstractProcessor extends AbstractProcessorLight implements ActionHook {
 
@@ -51,7 +56,13 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
     protected char[] hostNameC = new char[0];
 
     protected Adapter adapter;
+    /**
+     * 异步状态管理。
+     */
     protected final AsyncStateMachine asyncStateMachine;
+    /**
+     * 异步超时时间。
+     */
     private volatile long asyncTimeout = -1;
     /*
      * Tracks the current async generation when a timeout is dispatched. In the
@@ -153,7 +164,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
 
     /**
      * Get the associated adapter.
-     *
+     * 拿到对应关联的适配器。
      * @return the associated adapter
      */
     public Adapter getAdapter() {

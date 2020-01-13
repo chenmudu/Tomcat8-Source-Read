@@ -71,7 +71,7 @@ public class NioSelectorPool {
     protected AtomicInteger active = new AtomicInteger(0);
     protected AtomicInteger spare = new AtomicInteger(0);
     /**
-     * 基于线程安全的量表队列。用于放置多个Selector。复用。
+     * 基于线程安全的链表队列。用于放置多个Selector。复用。
      */
     protected ConcurrentLinkedQueue<Selector> selectors =
             new ConcurrentLinkedQueue<>();

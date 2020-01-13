@@ -45,6 +45,11 @@ public class LimitLatch {
         public Sync() {
         }
 
+        /**
+         * 共享式的去获取对应锁的状态。
+         * @param ignored
+         * @return
+         */
         @Override
         protected int tryAcquireShared(int ignored) {
             long newCount = count.incrementAndGet();
@@ -63,10 +68,13 @@ public class LimitLatch {
             return true;
         }
     }
-
+    //
     private final Sync sync;
+    //
     private final AtomicLong count;
+    //
     private volatile long limit;
+    //释放线程的标志。
     private volatile boolean released = false;
 
     /**

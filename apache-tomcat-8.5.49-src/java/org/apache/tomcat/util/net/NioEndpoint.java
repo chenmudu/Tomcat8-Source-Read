@@ -673,6 +673,8 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             SocketWrapperBase<NioChannel> socketWrapper, SocketEvent event) {
         /**
          * {@link SocketProcessor#doRun()}
+         * and
+         * {@link SocketProcessorBase#run()}
          */
         return new SocketProcessor(socketWrapper, event);
     }
@@ -805,6 +807,14 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
          * nio多路复用的重要组件(主Selector。)。
          * 可以只使用一个线程去控制多个Channel。
          * 减少线程的切换。达到性能要求。
+         *
+         *              Thread
+         *                |
+         *            Selector
+         *               |
+         * ------------------------------
+         *      |       |       |
+         *  Channel Channel  Channel
          */
         private Selector selector;
         /**
@@ -819,12 +829,19 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         private volatile boolean close = false;
         private long nextExpiration = 0;//optimize expiration handling
         /**
-         * 原子计数器。
+         * 用于记录唤醒的Channel的个数来判断获取channel的方式。
          */
         private AtomicLong wakeupCounter = new AtomicLong(0);
 
+        /**
+         * Selector内就绪状态Channel的个数。
+         */
         private volatile int keyCount = 0;
 
+        /**
+         * 构造器内初始化管道。
+         * @throws IOException
+         */
         public Poller() throws IOException {
             this.selector = Selector.open();
         }
@@ -1021,6 +1038,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         hasEvents = events();
                         /**
                          * Poller去处理的时候非阻塞。
+                         * 获取对应的Channel。
                          */
                         if (wakeupCounter.getAndSet(-1) > 0) {
                             //if we are here, means we have other stuff to do
@@ -1048,11 +1066,16 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 }
                 //either we timed out or we woke up, process events first
                 if ( keyCount == 0 ) hasEvents = (hasEvents | events());
-
+                /**
+                 * 获取对应的selector内SelectKeys的迭代器。
+                 */
                 Iterator<SelectionKey> iterator =
                     keyCount > 0 ? selector.selectedKeys().iterator() : null;
                 // Walk through the collection of ready keys and dispatch
                 // any active event.
+                /**
+                 * 遍历处于read状态的keys集合和分发处于活动状态的任何事件。
+                 */
                 while (iterator != null && iterator.hasNext()) {
                     SelectionKey sk = iterator.next();
                     NioSocketWrapper attachment = (NioSocketWrapper)sk.attachment();

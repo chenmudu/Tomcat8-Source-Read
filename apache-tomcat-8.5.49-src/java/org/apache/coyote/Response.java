@@ -100,6 +100,7 @@ public final class Response {
 
     /**
      * Action hook.
+     * 回调函数。
      */
     volatile ActionHook hook;
 

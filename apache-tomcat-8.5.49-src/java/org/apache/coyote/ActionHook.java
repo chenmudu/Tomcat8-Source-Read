@@ -23,6 +23,9 @@ package org.apache.coyote;
  * coyote servlet containers to request operations on the coyote connectors.
  * Some standard actions are defined in ActionCode, however custom
  * actions are permitted.
+ * 回调的钩子函数。这些Action表示：
+ * Servlet容器对于请求对应Connector的操作的回调机制。还有一些其他的actions是在
+ * ActionCode中进行定义的，而且支持自定义actions。
  *
  * The param object can be used to pass and return informations related with the
  * action.
@@ -32,11 +35,13 @@ package org.apache.coyote;
  * is usually a Request or Response object.
  *
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public interface ActionHook {
 
     /**
      * Send an action to the connector.
+     * 发送事件给对应的连接器。
      *
      * @param actionCode Type of the action
      * @param param Action parameter
