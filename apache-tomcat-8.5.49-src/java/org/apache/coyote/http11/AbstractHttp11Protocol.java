@@ -44,6 +44,12 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
 
+/**
+ *
+ * 协议处理的抽象类。定义对应公有方法。
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
+ */
 public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     protected static final StringManager sm =

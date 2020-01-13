@@ -18,6 +18,11 @@ package org.apache.tomcat.util.net;
 
 import java.util.Objects;
 
+/**
+ *  作为SocketProcessor得父抽象类。为子类定义基础模板方法。
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
+ */
 public abstract class SocketProcessorBase<S> implements Runnable {
 
     protected SocketWrapperBase<S> socketWrapper;
@@ -35,6 +40,9 @@ public abstract class SocketProcessorBase<S> implements Runnable {
     }
 
 
+    /**
+     * tomcat线程池执行的任务基于此。
+     */
     @Override
     public final void run() {
         synchronized (socketWrapper) {

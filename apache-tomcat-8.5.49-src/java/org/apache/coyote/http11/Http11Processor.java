@@ -71,6 +71,8 @@ import org.apache.tomcat.util.res.StringManager;
  * 此类通过持有的NioSocketWrapper去读写数据.
  * 此类被Tomcat自定义的I/O密集型线程池内的线程调用..
  * 运行此类的线程总是阻塞在I/O的读写上.
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public class Http11Processor extends AbstractProcessor {
 

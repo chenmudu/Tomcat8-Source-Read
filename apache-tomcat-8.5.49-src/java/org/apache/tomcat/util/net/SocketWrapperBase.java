@@ -30,7 +30,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  *
- * @param <E>
+ *  NioSocketWrapper的底层抽象类。
  */
 public abstract class SocketWrapperBase<E> {
 

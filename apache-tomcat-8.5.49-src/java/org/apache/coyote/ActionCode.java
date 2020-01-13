@@ -21,10 +21,14 @@ package org.apache.coyote;
  * ActionCodes represent callbacks from the servlet container to the coyote
  * connector. Actions are implemented by ProtocolHandler, using the ActionHook
  * interface.
+ * ActionCode表示从Servlet容器到协议的处理器之间的回调。
+ * ProtocolHandler的子类去实现对应的操作。
+ * 其实就是个枚举，用于表示不同的状态。
  *
  * @see ProtocolHandler
  * @see ActionHook
  * @author Remy Maucherat
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public enum ActionCode {
     ACK,

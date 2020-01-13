@@ -20,11 +20,16 @@ package org.apache.tomcat.util.net;
  * Defines events that occur per socket that require further processing by the
  * container. Usually these events are triggered by the socket implementation
  * but they may be triggered by the container.
+ *  容器进一步需要处理且发生在每个socket上的事件在这里被定义。
+ *  可能由socket实现类也有可能由容器去触发。
+ *
+ * @translator chenchen6(chenmudu@gmail.com/chenchen6@tuhu.cn)
  */
 public enum SocketEvent {
 
     /**
      * Data is available to be read.
+     * 数据此时可以读取。
      */
     OPEN_READ,
 

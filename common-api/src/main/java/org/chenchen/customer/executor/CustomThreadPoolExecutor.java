@@ -62,7 +62,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor implements Esur
      */
     @Override
     public void execute(Runnable runnableTask) {
-        Objects.requireNonNull(runnableTask, "current runnableTask can't be null.");
+        Objects.requireNonNull(runnableTask, "current runnable Task can't be null.");
         execute(runnableTask, Integer.valueOf("0"), TimeUnit.SECONDS);
     }
 

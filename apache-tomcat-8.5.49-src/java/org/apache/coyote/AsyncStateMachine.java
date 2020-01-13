@@ -28,6 +28,8 @@ import org.apache.tomcat.util.security.PrivilegedSetTccl;
 /**
  * Manages the state transitions for async requests.
  *
+ * 管理对应异步请求的状态。
+ *
  * <pre>
  * The internal states that are used are:
  * DISPATCHED       - Standard request. Not in Async mode.
