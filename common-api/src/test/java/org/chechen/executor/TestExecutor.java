@@ -1,10 +1,12 @@
 package org.chechen.executor;
 
 import lombok.NoArgsConstructor;
-import org.chenchen.customer.executor.CustomThreadPoolExecutor;
-import org.chenchen.customer.queue.CustomTaskQueue;
+import org.chenchen.customer.executor.CustomizableThreadPoolExecutor;
+import org.chenchen.customer.queue.CustomizableTaskQueue;
 
 import java.util.Random;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * MIT License
@@ -85,16 +87,55 @@ public class TestExecutor {
      *          这是基本要求，要满足当线程池内调度水平到达峰值后的平缓策略被执行。
      */
     private static void testCustomExecutor() {
-        final CustomTaskQueue taskQueue = new CustomTaskQueue(config.getQueueSize());
-        CustomThreadPoolExecutor executor = new CustomThreadPoolExecutor(true, config.getCorePoolSize(), config.getMaxPoolSize(), config.getKeepAliveTime(), config.getTimeUnit(), taskQueue);
+        //1.设置对应的Queue。
+        final CustomizableTaskQueue taskQueue = new CustomizableTaskQueue(config.getQueueSize());
+        //如果想定制名称. OK。请在startInitialize之前设置前缀即可。
+        CustomizableThreadPoolExecutor.SET_THREAD_PREFIX_NAME("chen");
+        CustomizableThreadPoolExecutor executor = CustomizableThreadPoolExecutor.startInitializeCustomThreadPoolExecutor(true, config.getCorePoolSize(),
+                                                                                config.getMaxPoolSize(), config.getKeepAliveTime(),
+                                                                                config.getTimeUnit(), taskQueue,
+                                                                    null, new ThreadPoolExecutor.CallerRunsPolicy());
+        //CustomizableThreadPoolExecutor executor = new CustomizableThreadPoolExecutor(true, config.getCorePoolSize(), config.getMaxPoolSize(), config.getKeepAliveTime(), config.getTimeUnit(), taskQueue);
         taskQueue.setParentExecutor(executor);
-        for(int i = 0; i < config.getForLoopCount(); i++) {
-            executor.execute(new Runner("Task-" + (i + 1)));
+        //prefix
+        try {
+            for(int i = 0; i < config.getForLoopCount(); i++) {
+                executor.execute(new Runner("Task-" + (i + 1)));
+                //Future<?> future = executor.submit(new Runner("Task-" + (i + 1)));
+                //System.out.println("future.get() result is: " + future.get());
+            }
+        } catch (Exception e) {
+            System.out.println("testCustomExecutor execute 方法抛出异常，说明线程池执行了拒绝策略！信息为：" + e.getMessage());
         }
+        while (true) {
+            long taskCount = executor.getTaskCount();
+            System.out.println("总任务数为 ：" + taskCount);
+            int i = executor.getSubmmitedTaskCount().get();
+            System.out.println("已提交任务数量为 ：" + i);
+            int queueSize = executor.getQueue().size();
+            System.out.println("当前排队任务数为 ：" + queueSize);
+
+            int activeCount = executor.getActiveCount();
+            System.out.println("当前活动线程数为 ：" + activeCount);
+
+            long completedTaskCount = executor.getCompletedTaskCount();
+            System.out.println("执行完成任务数为 ：" + completedTaskCount);
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(completedTaskCount == taskCount) {
+                break;
+            }
+        }
+        System.out.println("end!");
     }
 
     @NoArgsConstructor
-    public static class Runner implements Runnable {
+    static class Runner implements Runnable {
+        //当前任务名称。
         private String currentRunnerName;
 
         public Runner(String name) {
@@ -110,9 +151,8 @@ public class TestExecutor {
             try {
                 Thread.currentThread().sleep(sleepRandomTime);
             } catch (InterruptedException e) {
-                //
             }
-            System.out.println(currentRunnerName + "----Current Thread Name is : " + Thread.currentThread().getName() + "     --sleep " + sleepRandomTime + "ms");
+            System.out.println(currentRunnerName + "--runnable--Current Thread Name is : " + Thread.currentThread().getName() + "     --sleep " + sleepRandomTime + "ms");
         }
     }
 }
