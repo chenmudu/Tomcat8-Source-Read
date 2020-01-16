@@ -1,11 +1,9 @@
 package org.chenchen.customer.queue;
 
+import com.sun.istack.internal.Nullable;
 import lombok.Data;
-import org.chenchen.customer.executor.CustomThreadPoolExecutor;
+import org.chenchen.customer.executor.CustomizableThreadPoolExecutor;
 
-import javax.xml.stream.events.EndElement;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -33,19 +31,18 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Data
-public class CustomTaskQueue extends LinkedBlockingQueue<Runnable> {
+public class CustomizableTaskQueue extends LinkedBlockingQueue<Runnable> {
 
     /**
      * 所属父线程池。
      */
-    private transient volatile CustomThreadPoolExecutor parentExecutor;
+    private transient volatile CustomizableThreadPoolExecutor parentExecutor;
 
-
-    public CustomTaskQueue() {
-        super();
-    }
-
-    public CustomTaskQueue(int capacity) {
+    /**
+     * 不提供无参数的构造器。
+     * @param capacity
+     */
+    public CustomizableTaskQueue(@Nullable Integer capacity) {
         super(capacity);
     }
 
@@ -84,7 +81,6 @@ public class CustomTaskQueue extends LinkedBlockingQueue<Runnable> {
      */
     @Override
     public boolean offer(Runnable runnableTask) {
-        System.out.println("CustomTaskQueue forceInsertTaskQueue one param start。");
         //代表此队列无父线程池
         if(Objects.isNull(parentExecutor)) {
             super.offer(runnableTask);
@@ -97,8 +93,8 @@ public class CustomTaskQueue extends LinkedBlockingQueue<Runnable> {
         if(parentExecutor.getSubmmitedTaskCount().get() <= parentExecutor.getPoolSize()) {
             return super.offer(runnableTask);
         }
+
         //   coreThreadCount < currentThreadCount < maxThreadCount
-        //   整个线程池处理任务的核心逻辑。只有一行。
         if(parentExecutor.getPoolSize() < parentExecutor.getMaximumPoolSize()) {
             return false;
         }

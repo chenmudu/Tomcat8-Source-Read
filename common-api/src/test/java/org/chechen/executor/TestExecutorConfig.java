@@ -30,12 +30,12 @@ public class TestExecutorConfig implements Serializable {
     /**
      * 核心线程数
      */
-    private final int corePoolSize = 8;
+    private final int corePoolSize = 5;
 
     /**
      * 最大线程数
      */
-    private final int maxPoolSize = 20;
+    private final int maxPoolSize = 10;
 
     /**
      * 空闲线程存活的时间
@@ -50,10 +50,10 @@ public class TestExecutorConfig implements Serializable {
     /**
      * 任务个数。外部测试数据循环的次数
      */
-    private final long forLoopCount = 30;
+    private final long forLoopCount = 31;
 
     /**
      * 任务队列的长度。
      */
-    private final int queueSize = 100;
+    private final int queueSize = 20;
 }
