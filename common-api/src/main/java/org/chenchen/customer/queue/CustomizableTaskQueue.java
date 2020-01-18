@@ -7,6 +7,7 @@ import org.chenchen.customer.executor.CustomizableThreadPoolExecutor;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,6 +33,11 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 public class CustomizableTaskQueue extends LinkedBlockingQueue<Runnable> {
+
+    /**
+     * 停止的时候调用.调用停止时仅存在调用线程一个线程.
+     */
+    private Integer forceRemainingCapacityOnCheck = null;
 
     /**
      * 所属父线程池。
@@ -108,5 +114,19 @@ public class CustomizableTaskQueue extends LinkedBlockingQueue<Runnable> {
         if(Objects.isNull(parentExecutor) || parentExecutor.isShutdown()) {
             throw new RejectedExecutionException("current task queue's parent executor is null!");
         }
+    }
+
+
+    /**
+     * {@link ThreadPoolExecutor#addWorker(java.lang.Runnable, boolean)}
+     * 暂停的时候需要检查当前queue的大小。
+     * @return
+     */
+    @Override
+    public int remainingCapacity() {
+        if(Objects.nonNull(this.forceRemainingCapacityOnCheck)) {
+            return Integer.valueOf(this.forceRemainingCapacityOnCheck);
+        }
+        return super.remainingCapacity();
     }
 }

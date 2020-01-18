@@ -4,7 +4,10 @@ import lombok.NoArgsConstructor;
 import org.chenchen.customer.executor.CustomizableThreadPoolExecutor;
 import org.chenchen.customer.queue.CustomizableTaskQueue;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -30,7 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TestExecutor {
     private static final TestExecutorConfig config = new TestExecutorConfig();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         testCustomExecutor();
     }
 
@@ -86,7 +89,7 @@ public class TestExecutor {
      *          (这是为了验证当达到最大线程数的时候,会不会进入队列，等待线程池内空闲线程的调度)
      *          这是基本要求，要满足当线程池内调度水平到达峰值后的平缓策略被执行。
      */
-    private static void testCustomExecutor() {
+    private static void testCustomExecutor() throws ExecutionException, InterruptedException {
         //1.设置对应的Queue。
         final CustomizableTaskQueue taskQueue = new CustomizableTaskQueue(config.getQueueSize());
         //如果想定制名称. OK。请在startInitialize之前设置前缀即可。
@@ -94,13 +97,24 @@ public class TestExecutor {
         CustomizableThreadPoolExecutor executor = CustomizableThreadPoolExecutor.startInitializeCustomThreadPoolExecutor(true, config.getCorePoolSize(),
                                                                                 config.getMaxPoolSize(), config.getKeepAliveTime(),
                                                                                 config.getTimeUnit(), taskQueue,
-                                                                    null, new ThreadPoolExecutor.CallerRunsPolicy());
+                                                                    null, new ThreadPoolExecutor.CallerRunsPolicy(), null);
         //CustomizableThreadPoolExecutor executor = new CustomizableThreadPoolExecutor(true, config.getCorePoolSize(), config.getMaxPoolSize(), config.getKeepAliveTime(), config.getTimeUnit(), taskQueue);
         taskQueue.setParentExecutor(executor);
+        ArrayList<Future<String>> futureArrayList = new ArrayList<>();
         //prefix
         try {
             for(int i = 0; i < config.getForLoopCount(); i++) {
-                executor.execute(new Runner("Task-" + (i + 1)));
+//                Caller<Object> caller = new Caller("Task-" + (i + 1));
+//                Future<String> futureResult = executor.submit(caller);
+//                //System.out.println("future.get() result is:" + submit.get());
+//                futureArrayList.add(futureResult);
+
+
+                //executor.doSubmit(new Caller("Task-" + (i + 1)));
+
+
+                //executor.execute(new Runner("Task-" + (i + 1)));
+
                 //Future<?> future = executor.submit(new Runner("Task-" + (i + 1)));
                 //System.out.println("future.get() result is: " + future.get());
             }
@@ -108,6 +122,11 @@ public class TestExecutor {
             System.out.println("testCustomExecutor execute 方法抛出异常，说明线程池执行了拒绝策略！信息为：" + e.getMessage());
         }
         while (true) {
+//            System.out.println("----------------------------------------");
+//            for(Future<String> currentFuture : futureArrayList) {
+//                System.out.println("currentFuture result is : " + currentFuture.get());
+//            }
+//            System.out.println("----------------------------------------");
             long taskCount = executor.getTaskCount();
             System.out.println("总任务数为 ：" + taskCount);
             int i = executor.getSubmmitedTaskCount().get();
@@ -124,13 +143,17 @@ public class TestExecutor {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             if(completedTaskCount == taskCount) {
                 break;
             }
+//            if(queueSize < 5) {
+//                executor.setWaitForTasksToCompleteOnShutdown(true);
+//                executor.setAwaitTerminationSeconds(30);
+//                executor.destory();
+//            }
         }
-        System.out.println("end!");
     }
 
     @NoArgsConstructor
@@ -153,6 +176,30 @@ public class TestExecutor {
             } catch (InterruptedException e) {
             }
             System.out.println(currentRunnerName + "--runnable--Current Thread Name is : " + Thread.currentThread().getName() + "     --sleep " + sleepRandomTime + "ms");
+        }
+    }
+
+    @NoArgsConstructor
+    static class Caller implements Callable<Object> {
+        //当前任务名称。
+        private String currentRunnerName;
+
+        public Caller(String name) {
+            this.currentRunnerName = name;
+        }
+
+        private Random random = new Random();
+
+
+        @Override
+        public String call() {
+            int sleepRandomTime = random.nextInt(7000);
+            try {
+                Thread.currentThread().sleep(sleepRandomTime);
+            } catch (InterruptedException e) {
+            }
+            System.out.println(currentRunnerName + "--callable--Current Thread Name is : " + Thread.currentThread().getName() + "     --sleep " + sleepRandomTime + "ms");
+            return "success! & time = " + sleepRandomTime;
         }
     }
 }

@@ -20,6 +20,7 @@ package org.chenchen.customer;
  * @Description:
  */
 public interface SimpleAsyncListenableTaskExecutor {
-    //暂时搁置。 ListenableFuture.
+    //暂时搁置。
+    //ListenableFuture.
     //下一版添加。
 }
