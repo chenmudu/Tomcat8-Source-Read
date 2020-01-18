@@ -57,6 +57,7 @@
 |0000 0000 1100| 2020.01.02 | [线程池对比文档](https://github.com/chenmudu/Tomcat8-Source-Read/tree/master/common-doc/doc/2-custom-executor.md )   | 陈晨   |  BanPo-Station  | 
 |0000 0000 1101| 2020.01.09 | [架构图和注释修改](https://github.com/chenmudu/Tomcat8-Source-Read/commit/fe7ddf3a9ec66c66da78e0844f5e68c5e9aeea96)   | 陈晨   |  ChanHe-Station  | 
 |0000 0000 1110| 2020.01.16 | [线程池功能修补](https://github.com/chenmudu/Tomcat8-Source-Read/commit/c01364e95b442820b612b87b6a7a67411a110629)   | 陈晨   |  ChangLePo-Station  | 
+|0000 0000 1111| 2020.01.18 | [线程池优雅关闭](https://github.com/chenmudu/Tomcat8-Source-Read/pull/39/commits/95de0359548b830b0370500857548eaee64bcf99)   | 陈晨   |  WanShouLu-Station  |
 |    ...     |  ...       | ...      |  陈晨    |  ...  |
 
 > ☞ 预计目标 & 目前进度
@@ -107,7 +108,7 @@ org.apache.catalina.startup.Bootstrap
 5 Run Application 🥑
 
 ```sh
-Web Browser keys：localhost:8080
+Web Browser keys：localhost:8080/TestTomcatServlet/FirstServlet
 ```
 6 选择感兴趣的模块调试读源码即可。如果出现乱码，请点击 🍅
 ```sh
