@@ -50,7 +50,7 @@ public class TestExecutorConfig implements Serializable {
     /**
      * 任务个数。外部测试数据循环的次数
      */
-    private final long forLoopCount = 31;
+    private final long forLoopCount = 28;
 
     /**
      * 任务队列的长度。
